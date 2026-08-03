@@ -1,2 +1,2 @@
-# exiliado
+# Exiliado Game
 Mi videojuego
