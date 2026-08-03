@@ -1384,8 +1384,8 @@ function updateZaps(dt){
   for(const z of zaps){if(!z.g.visible)continue;
     z.prog+=dt;const p=z.prog/TRAVEL;
     if(p>=1){z.g.visible=false;
-      if(z.kind==='wall'){spark(z.ex,clamp(z.ey,.2,6),6);sfx('ric');}
-      else if(z.kind==='floor'){dust(z.ex,0,5);sfx('ric');}
+      if(z.kind==='wall'){spark(z.ex,clamp(z.ey,.2,6),6);}
+      else if(z.kind==='floor'){dust(z.ex,0.5);}
       else if(z.kind==='body'){blood(_v1.set(z.ex,z.ey,.2),4);}
       continue;}
     const headT=p*z.len, tailT=Math.max(0,headT-TRAIL), seg=headT-tailT, midT=(headT+tailT)*.5;
@@ -1816,7 +1816,7 @@ if(bgm){bgm.volume=0.2;bgm.loop=true;}//VOLUMEN MUSICA
 function bgmStart(){if(bgm){bgm.currentTime=0;bgm.play().catch(()=>{});}}
 function bgmPause(){if(bgm)bgm.pause();}
 function bgmResume(){if(bgm)bgm.play().catch(()=>{});}
-//SONIDO DE DISPARO M4 
+//SONIDO DE DISPARO M4
 const shotPool=[];for(let i=0;i<8;i++){const a=new Audio('assets/disparo_m4.mp3');a.preload='auto';a.volume=0.1;shotPool.push(a);}
 let shotPoolIdx=0;
 function playShotSfx(){if(!shotPool.length)return;const a=shotPool[shotPoolIdx++%shotPool.length];a.currentTime=0;a.play().catch(()=>{});}
