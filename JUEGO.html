@@ -1384,8 +1384,8 @@ function updateZaps(dt){
   for(const z of zaps){if(!z.g.visible)continue;
     z.prog+=dt;const p=z.prog/TRAVEL;
     if(p>=1){z.g.visible=false;
-      if(z.kind==='wall'){spark(z.ex,clamp(z.ey,.2,6),6);sfx('ric');}
-      else if(z.kind==='floor'){dust(z.ex,0,5);sfx('ric');}
+      if(z.kind==='wall'){spark(z.ex,clamp(z.ey,.2,6),6);}
+      else if(z.kind==='floor'){dust(z.ex,0.5);}
       else if(z.kind==='body'){blood(_v1.set(z.ex,z.ey,.2),4);}
       continue;}
     const headT=p*z.len, tailT=Math.max(0,headT-TRAIL), seg=headT-tailT, midT=(headT+tailT)*.5;
