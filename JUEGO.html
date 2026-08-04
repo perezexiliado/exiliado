@@ -660,6 +660,23 @@ const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getConte
 rows.forEach((row,y)=>{for(let x=0;x<row.length;x++){const ch=row[x];
 if(ch!=='.'&&pal[ch]){g.fillStyle=pal[ch];g.fillRect(x,y,1,1);}}});
 return c;}
+function hiDef(rows,pal,F){
+F=F||2;
+const H=rows.length,W=Math.max(...rows.map(r=>r.length));
+const c=document.createElement('canvas');c.width=W*F;c.height=H*F;
+const g=c.getContext('2d');
+const at=(x,y)=>{if(y<0||y>=H)return '.';const r=rows[y];if(!r||x<0||x>=r.length)return '.';const ch=r[x];return(ch==='.'||!pal[ch])?'.':ch;};
+for(let y=0;y<H;y++)for(let x=0;x<W;x++){const ch=at(x,y);if(ch==='.')continue;
+const col=pal[ch];
+g.fillStyle=col;g.fillRect(x*F,y*F,F,F);
+const r=at(x+1,y),d=at(x,y+1);
+if(r!==ch){g.fillStyle=shade(col,-30);g.fillRect(x*F+F-1,y*F,1,F);}
+if(d!==ch){g.fillStyle=shade(col,-30);g.fillRect(x*F,y*F+F-1,F,1);}
+if(r!==ch&&d!==ch){g.fillStyle=shade(col,-55);g.fillRect(x*F+F-1,y*F+F-1,1,1);}
+if(at(x,y-1)==='.'){g.fillStyle=shade(col,22);g.fillRect(x*F,y*F,F,1);}
+else if(at(x-1,y)==='.'){g.fillStyle=shade(col,22);g.fillRect(x*F,y*F,1,1);}
+}
+return c;}
 const BODY=[
 ".....KKKKKK.....",
 "....KHHhhHHK....",
@@ -747,6 +764,7 @@ desc:'Un tiro, un muerto. Cadencia lenta y mira telescópica: borra cabezas a cu
 {id:'spd',type:'upgrade',name:'PIE LIGERO',max:3,costs:[140,280,420],desc:'+15% de velocidad de movimiento por rango.'}
 ];
 const SC=48, CX=24, FEET=40, PX2=0.05;
+const BOSS_RES=6;
 const soldierCanvas=document.createElement('canvas');soldierCanvas.width=SC;soldierCanvas.height=SC;
 const sctx=soldierCanvas.getContext('2d');sctx.imageSmoothingEnabled=false;
 const soldierTex=new THREE.CanvasTexture(soldierCanvas);
@@ -1472,6 +1490,24 @@ const KNIGHT_TORSO=[
 "....KKMMMMKK....",
 ".....KKKKKK.....",
 "....KK....KK...."];
+const DRACULA_TORSO=[
+"....KKKKKKKK....",
+"...KAAAAAAAAK...",
+"...KAHHHHHHAK...",
+"...KAHEHHEHAK...",
+"...KAHHHHHHAK...",
+"....KHHhHHK.....",
+"....KWWWWK......",
+"...KKWWWWKK.....",
+".KKCRRRRRRRCKK..",
+".KCCRRRRRRRCCK..",
+".KCCRRGGRRRCCK..",
+".KCCRRRRRRRCCK..",
+".KCCRRRRRRRCCK..",
+"..KKCRRRRRCCK...",
+"....KKCCCCKK....",
+".....KKKKKK.....",
+"....KK....KK...."];
 const WINGS=[
 "KKK..........KKK",
 "KRRRK......KRRRK",
@@ -1482,88 +1518,110 @@ const WINGS=[
 "..KRRRRRRRRRRK.."];
 const BOSS_TYPES=[
 {id:'chef', names:['GORDO, EL CARNICERO','EL CHEF DE LA PESTE','MORCILLA, EL COCINERO'],
- hpMul:16, speed:1.7, dmg:24, torso:CHEF_TORSO, piv:[7,14],
+ hpMul:30, speed:1.7, dmg:34, torso:CHEF_TORSO, piv:[7,14],
  pal:{K:'#05060a',H:'#c8a284',h:'#a8826a',E:'#ff8a2a',W:'#e8e4da',C:'#d8d4c8'},
  weapons:['cleaver','knife','club','hook']},
 {id:'demon',names:['AZAZEL, EL ALADO','BELIAL, LANGUA DE FUEGO','EL DEMONIO ROJO'],
- hpMul:14, speed:2.5, dmg:22, torso:DEMON_TORSO, piv:[7,14], wings:true,
+ hpMul:26, speed:2.5, dmg:30, torso:DEMON_TORSO, piv:[7,14], wings:true,
  pal:{K:'#05060a',H:'#a02020',h:'#7a1414',E:'#ffd24a',W:'#e8e4da',R:'#a02020'},
  weapons:['spear','sword','scythe','trident']},
 {id:'laser',names:['EL COLOSO OJOS DE SOL','GOLIAT, EL QUE MIRMA','EL VIGÍA CORRUPTO'],
- hpMul:20, speed:1.4, dmg:18, laser:true, torso:ZTORSO, piv:[7,14],
+ hpMul:36, speed:1.4, dmg:26, laser:true, torso:ZTORSO, piv:[7,14],
  pal:{K:'#05060a',H:'#7a8f6a',h:'#566b48',E:'#4adfff',W:'#cfc8a0',R:'#33241f',r:'#1d1410'},
  weapons:['staff','stick','hammer']},
 {id:'knight',names:['SIR VALEMORT, EL CAÍDO','EL CABALLERO DE LA CRIPTA','DON FERRO, EL SIN ALMA'],
- hpMul:24, speed:1.5, dmg:28, torso:KNIGHT_TORSO, piv:[7,14],
+ hpMul:44, speed:1.5, dmg:42, torso:KNIGHT_TORSO, piv:[7,14],
  pal:{K:'#05060a',M:'#9aa0b5',m:'#6a6f7c',E:'#4adfff'},
- weapons:['sword','axe','hammer','spear','greatsword']}
+ weapons:['sword','axe','hammer','spear','greatsword']},
+{id:'drac',names:['DRÁCULA, SEÑOR DE LA NOCHE','VLAD, EL EMPALADOR','PRÍNCIPE DE LAS TINIEBLAS'],
+hpMul:34, speed:2.2, dmg:36, torso:DRACULA_TORSO, piv:[7,14], wings:true,
+pal:{K:'#05060a',H:'#d8c8b0',h:'#b0a088',E:'#ff2a1a',A:'#1a1024',C:'#241a30',R:'#7a1420',W:'#e8e4da',G:'#d4ab6a'},
+weapons:['staff','sword','greatsword']}
 ];
 /* ---- ARMAS DE JEFE EN PIXEL ART (empuñadas al azar) ---- */
-const WEAPON_PAL={K:'#05060a',W:'#c9ccd6',W2:'#8a8f9c',B:'#d8d0c0',M:'#9aa0b5',S:'#6e4527',S2:'#4a2e18',H:'#8a8f9c'};
+const WEAPON_PAL={K:'#05060a',W:'#c9ccd6',W2:'#8a8f9c',B:'#d8d0c0',M:'#9aa0b5',S:'#6e4527',S2:'#4a2e18',H:'#5e3a20',G:'#d4ab6a',E:'#4adfff'};
 const WEAPONS={
-sword:{piv:[1,1],rows:[
-".............K",
-"KKHWWWWWWWWWWK",
-"KKHWWWWWWWWWWK",
-".............K"]},
-greatsword:{piv:[1,2],rows:[
-"..............K",
-"..............K",
-"KKHHWWWWWWWWWWK",
-"..............K",
-"..............K"]},
-katana:{piv:[1,1],rows:[
-"............K",
-"KKHWWWWWWWWWK",
-"............K"]},
+sword:{piv:[2,2],rows:[
+"...K.........",
+".HHKWWWWWWK..",
+".HHKWWWWWWWK.",
+".HHKW2W2W2K..",
+"...K........."]},
+greatsword:{piv:[3,2],rows:[
+"....K...........",
+".HHHKWWWWWWWWK..",
+".HHHKWWWWWWWWWK.",
+".HHHKW2W2W2W2K..",
+"....K..........."]},
 spear:{piv:[1,1],rows:[
-".............KB",
-"SSSSSSSSSSSSSKB",
-".............KB"]},
-trident:{piv:[1,1],rows:[
-"K...........K",
-"SSSSSSSSSSSSSK",
-"K...........K"]},
-cleaver:{piv:[1,4],rows:[
-".KKKKKKKKKKK",
-".KWWWWWWWWWK",
-".KWWWWWWWWWK",
-".KWWWWWWWWWK",
-".KKKKKKKKKKK",
-".SS...........",
-".SS..........."]},
-knife:{piv:[1,2],rows:[
-".KKKKKKKKK",
-".KWWWWWWWK",
-".KKKKKKKKK",
-".SS......."]},
+"...........KW.",
+"SSSSSSSSSSSKWWK",
+"...........KW."]},
+trident:{piv:[1,2],rows:[
+"K.........K..",
+"K.........KK.",
+"SSSSSSSSSSWWK",
+"K.........KK.",
+"K.........K.."]},
+scythe:{piv:[2,5],rows:[
+".KKKKKKKKK..",
+".KWWWWWWWWK.",
+"..KWWWWWWK..",
+"....KWWK....",
+"SSSSSSK.....",
+".SSSSSS.....",
+".SSSSSS....."]},
+cleaver:{piv:[2,4],rows:[
+".KKKKKKKKKK.",
+".KWWWWWWWWK.",
+".KWWKWWWWWK.",
+".KWWWWWWWWK.",
+".KKKKKKKKKK.",
+"..SS........",
+"..SS........"]},
+knife:{piv:[2,2],rows:[
+".KKKKKK....",
+".KHHWWWWK..",
+".KHHWWWWWWK",
+".KHHWWWWK..",
+".KKKKKK...."]},
 stick:{piv:[1,0],rows:[
 "SSSSSSSSSSSSSS"]},
 staff:{piv:[1,1],rows:[
-".............M",
-"SSSSSSSSSSSSSM",
-".............M"]},
+".........KEEK",
+"SSSSSSSSSKEEK",
+".........KEEK"]},
 axe:{piv:[1,2],rows:[
-"......KWWK",
-"......KWWK",
-"SSSSSSKWWK",
-"......KWWK",
-"......KKKK"]},
+".....KWWK.",
+".....KWWWK",
+"SSSSSKWWWK",
+".....KWWWK",
+".....KWWK."]},
 hammer:{piv:[1,2],rows:[
-"......KMMK",
-"......KMMK",
-"SSSSSSKMMK",
-"......KMMK",
-"......KMMK"]},
+".....KMMMK",
+".....KMMMK",
+"SSSSSKMMMK",
+".....KMMMK",
+".....KMMMK"]},
 club:{piv:[1,2],rows:[
-".......KWK",
-".......KWWK",
-"SSSSSSKWWK",
-".......KWK"]}
+"......KWK..",
+".....KWWK..",
+"SSSSSKWWWK.",
+".....KWWK..",
+"......KWK.."]},
+hook:{piv:[1,3],rows:[
+"....KKKK..",
+"....KWWK..",
+"....KWWK..",
+"SSSSKWWK..",
+"....KWWK..",
+".....KKK.."]}
 };
 const weaponCanvases={};
 for(const k in WEAPONS){weaponCanvases[k]=pxCanvas(WEAPONS[k].rows,WEAPON_PAL);}
 const wingsCanvas=pxCanvas(WINGS,{K:'#05060a',R:'#7a1414'});
+const weaponHD={};for(const k in WEAPONS){weaponHD[k]=hiDef(WEAPONS[k].rows,WEAPON_PAL,BOSS_RES);}
+const wingsHD=hiDef(WINGS,{K:'#05060a',R:'#7a1414'},BOSS_RES);
 /* ================================================================ */
 const ZCLASSES={
 normal:{sx:1.0,  sy:1.0,  hpMul:1.0, speedMul:1.0,  dmg:9,  cash:7,  tag:'normal'},
@@ -1639,26 +1697,32 @@ g.restore();
 function drawZombie(z){
 const g=z.ctx,p=z.pose,bob=p.bob||0,col=z.colors;
 const piv=z.torsoPiv||ZPIV;
-g.clearRect(0,0,SC,SC);
+const rs=z.resScale||1;
+g.setTransform(1,0,0,1,0,0);
+g.clearRect(0,0,g.canvas.width,g.canvas.height);
+g.setTransform(rs,0,0,rs,0,0);
 g.save();g.translate(CX,FEET);g.scale(p.dir,1);
 if(p.dead){g.rotate(p.dir*p.dead.rot);g.translate(0,p.dead.sink);g.globalAlpha=p.dead.fade;}
-if(z.wings){g.save();g.translate(BODY_BASE[0],-(BODY_BASE[1]+bob));g.scale(1.4,1.4);
-g.drawImage(wingsCanvas,-8,-6);g.restore();}
+if(z.wings){g.save();g.translate(BODY_BASE[0],-(BODY_BASE[1]+bob));
+g.drawImage(wingsHD,-8*1.4,-6*1.4,wingsHD.width*1.4/rs,wingsHD.height*1.4/rs);g.restore();}
 zLeg(g,HIP_B[0],HIP_B[1]+bob,p.thighB,p.kneeB,true,col);
 zArm(g,ZSH_B[0],ZSH_B[1]+bob,p.armB,true,col);
 g.save();g.translate(BODY_BASE[0],-(BODY_BASE[1]+bob));g.rotate(p.lean);
-g.drawImage(z.torsoImg,-piv[0],-piv[1]);g.restore();
+g.drawImage(z.torsoImg,-piv[0],-piv[1],z.torsoImg.width/rs,z.torsoImg.height/rs);g.restore();
 zLeg(g,HIP_F[0],HIP_F[1]+bob,p.thighF,p.kneeF,false,col);
 zArm(g,ZSH_F[0],ZSH_F[1]+bob,p.armF,false,col);
 if(z.weapon){const wv=WEAPONS[z.weapon];const a=p.armF;
 const hx=ZSH_F[0]+Math.cos(a)*7, hy=ZSH_F[1]+Math.sin(a)*7;
+const wimg=z.isBoss?weaponHD[z.weapon]:weaponCanvases[z.weapon];
+const us=z.isBoss?1/rs:1;
 g.save();g.translate(hx,-hy);g.rotate(-a);
-g.drawImage(weaponCanvases[z.weapon],-wv.piv[0],-wv.piv[1]);g.restore();}
+g.drawImage(wimg,-wv.piv[0],-wv.piv[1],wimg.width*us,wimg.height*us);g.restore();}
 g.restore();
 z.tex.needsUpdate=true;
 }
-function buildZombie(){
-const cv=document.createElement('canvas');cv.width=SC;cv.height=SC;
+function buildZombie(res){
+res=res||SC;
+const cv=document.createElement('canvas');cv.width=res;cv.height=res;
 const ctx=cv.getContext('2d');ctx.imageSmoothingEnabled=false;
 const tex=new THREE.CanvasTexture(cv);
 tex.magFilter=THREE.NearestFilter;tex.minFilter=THREE.NearestFilter;
@@ -1680,7 +1744,7 @@ const hpFill=new THREE.Mesh(new THREE.PlaneGeometry(0.92,0.10),hpFillMat);hpFill
 hpbar.add(hpBorder);hpbar.add(hpBg);hpbar.add(hpFill);
 hpbar.position.set(0,2.15,0.15);hpbar.visible=false;scene.add(hpbar);
 return{mesh,blob:bl,blobMat,ctx,tex,mat,torsoImg:null,colors:null,cls:ZCLASSES.normal,
-x:0,sx:1,sy:1,meshBaseY:MESH_CENTER_Y,hpbarBaseY:2.15,dmg:9,torsoPiv:null,weapon:null,wings:false,
+x:0,sx:1,sy:1,meshBaseY:MESH_CENTER_Y,hpbarBaseY:2.15,dmg:9,torsoPiv:null,weapon:null,wings:false,resScale:res/SC,
 hpbar,hpFill,hpFillMat,maxhp:1,
 pose:{dir:1,thighF:0,thighB:0,kneeF:0,kneeB:0,lean:.2,armF:0,armB:0,bob:0,dead:null}};
 }
@@ -1714,11 +1778,11 @@ let bossSpawnedThisWave=false;
 function spawnBoss(){
 const side=Math.random()<.5?-1:1;
 const x=side*(WORLD_LIMIT-1.5);
-const z=buildZombie();
+const z=buildZombie(SC*BOSS_RES);
 const type=pick(BOSS_TYPES);
 z.isBoss=true; z.bossType=type.id;
 z.name=pick(type.names);
-z.torsoImg=pxCanvas(type.torso,type.pal);
+z.torsoImg=hiDef(type.torso,type.pal,BOSS_RES);
 z.torsoPiv=type.piv;
 z.wings=!!type.wings;
 z.laser=!!type.laser;
@@ -2184,7 +2248,7 @@ let bestT=-1,bestZ=null;
 for(const z of zombies){if(z.dead)continue;const tt=segHit2D(ox,oy,dx,dy,tExit,z);
 if(tt>=0&&(bestT<0||tt<bestT)){bestT=tt;bestZ=z;}}
 if(bestZ){const hx=ox+dx*bestT, hy=oy+dy*bestT;const head=hy>(bestZ.isBoss?1.45*bestZ.sy:1.45);
-const dmg=(head?w.head:w.body)*dmgMul;bestZ.hp-=dmg;bestZ.stagger=.18;
+const dmg=(head?w.head:w.body)*dmgMul;bestZ.hp-=dmg;if(!bestZ.isBoss)bestZ.stagger=.18;
 blood(_v1.set(hx,hy,.2),5);spawnImpact(hx,hy);sfx('hit');
 if(bestZ.hp<=0)killZombie(bestZ);
 spawnZap(_v3.set(ox,oy,.45),_dir.set(dx,dy,0),bestT,'body',hx,hy);
