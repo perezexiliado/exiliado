@@ -261,6 +261,7 @@ animation:riseIn 1s both}
 <body class="intitle">
 <div id="scene"></div>
 <audio id="bgm" src="assets/soundtrack.mp3" loop preload="auto"></audio>
+<audio id="bossbgm" src="assets/boss_music.mp3" loop preload="auto"></audio>
 <div id="scanlines"></div>
 <div id="vignette"></div><div id="dmg"></div>
 <div id="hud">
@@ -1740,7 +1741,7 @@ z.mesh.position.set(x,z.meshBaseY,0.1);
 z.blob.position.set(x,0.02,0);
 z.hpbar.visible=false;
 zombies.push(z);
-spawnFlash(x); sfx('bossroar');
+spawnFlash(x); sfx('bossroar'); bossMusicStart();
 showBanner('JEFE · '+z.name,'¡PREPÁRATE PARA EL COMBATE!');
 bossHud.classList.add('show');
 bossName.textContent=z.name;
@@ -1748,6 +1749,7 @@ bossAb.textContent='JEFE · '+type.id.toUpperCase();
 }
 function killZombie(z){
 z.dead=true;z.fallT=0;z.hpbar.visible=false;kills++;killNum.textContent=kills;
+if(z.isBoss)bossMusicStop();
 const reward=z.isBoss?200:z.cls.cash;
 money += reward; setMoney(); floatNum(z.x,1.7,'+'+reward,'#f0d089');
 const d=new THREE.Mesh(decalGeo,bas(0x240607,{transparent:true,opacity:.8}));
@@ -1924,11 +1926,21 @@ s.s.material.opacity=Math.sin(k*Math.PI)*0.4;}
 }
 let AC=null,master,noiseBuf;
 //VOLUMEN MUSICA
+const BG_VOL=0.2, BOSS_VOL=0.4;
 const bgm=document.getElementById('bgm');
-if(bgm){bgm.volume=0.2;bgm.loop=true;}//VOLUMEN MUSICA
+if(bgm){bgm.volume=BG_VOL;bgm.loop=true;}
+const bossBgm=document.getElementById('bossbgm');
+if(bossBgm){bossBgm.volume=BOSS_VOL;bossBgm.loop=true;}
+let bossMusicOn=false;
 function bgmStart(){if(bgm){bgm.currentTime=0;bgm.play().catch(()=>{});}}
-function bgmPause(){if(bgm)bgm.pause();}
-function bgmResume(){if(bgm)bgm.play().catch(()=>{});}
+function bgmPause(){if(bgm)bgm.pause();if(bossBgm)bossBgm.pause();}
+function bgmResume(){if(bgm)bgm.play().catch(()=>{});if(bossMusicOn&&bossBgm)bossBgm.play().catch(()=>{});}
+function bossMusicStart(){bossMusicOn=true;
+ if(bossBgm){bossBgm.currentTime=0;bossBgm.play().catch(()=>{});}
+ if(bgm)bgm.volume=BG_VOL*0.35;}
+function bossMusicStop(){if(!bossMusicOn)return;bossMusicOn=false;
+ if(bossBgm){bossBgm.pause();bossBgm.currentTime=0;}
+ if(bgm)bgm.volume=BG_VOL;}
 //SONIDO DE DISPARO M4
 const shotPool=[];for(let i=0;i<8;i++){const a=new Audio('assets/disparo_m4.mp3');a.preload='auto';a.volume=0.1;shotPool.push(a);}
 let shotPoolIdx=0;
@@ -2132,6 +2144,7 @@ Object.assign(P,{x:0,y:0,vy:0,facing:1,hp:100,ammo:30,reloadKey:null,reloadT:0,f
 dead:false,deadT:0,wasAir:false,aimAng:0});
 P.mouthWorld.set(0.5,1.4,0.3);flashT=0;thudCd=0;
 kills=0;killNum.textContent='0';wave=1;state='intermission';interT=2.4;bossSpawnedThisWave=false;
+bossMusicStop();
 bossHud.classList.remove('show');
 goEl.classList.remove('show');resetProgress();setMoney();setAmmo();setHP();
 showBanner('OLEADA 1','LOS MUERTOS SE ACERCAN');waveHud.textContent='OLEADA 1';sfx('bell');}
@@ -2190,7 +2203,7 @@ if(P.reloadKey!==null||w.ammo===w.mag)return;
 P.reloadKey=curWeapon;P.reloadT=w.reload;sfx('reload');setAmmo();}
 function hurtPlayer(dmg){if(P.invuln>0||P.dead)return;
 P.hp-=dmg;P.invuln=.7;shake=Math.min(shake+.5,1);hurtFlash();sfx('hurt');setHP();
-if(P.hp<=0){P.dead=true;P.deadT=0;mouse.down=false;}}
+if(P.hp<=0){P.dead=true;P.deadT=0;mouse.down=false;bossMusicStop();}}
 function update(dt,t){
 const playing=(state==='combat'||state==='intermission');
 const showSoldier=(state!=='title');

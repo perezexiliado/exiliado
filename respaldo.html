@@ -86,14 +86,15 @@ background:linear-gradient(90deg,transparent,var(--bronze-b));opacity:.7}
 #wave-hud::before{right:100%;margin-right:10px}
 #wave-hud::after{left:100%;margin-left:10px;transform:scaleX(-1)}
 /* ---- BARRA DE JEFE: centrada arriba, nombre encima ---- */
-#boss-hud{position:fixed;top:60px;left:50%;transform:translateX(-50%);width:min(560px,80vw);
+#boss-hud{position:fixed;top:58px;left:50%;transform:translateX(-50%);width:min(600px,80vw);
 text-align:center;pointer-events:none;opacity:0;transition:opacity .4s;z-index:11}
 #boss-hud.show{opacity:1}
-#boss-name{font-weight:700;font-size:20px;letter-spacing:.18em;color:#e8e0ff;
-text-shadow:0 0 14px rgba(143,29,34,.7),0 2px 2px #000}
+#boss-name{font-weight:700;font-size:clamp(16px,2.4vw,24px);letter-spacing:.18em;color:#ffd9d9;
+text-shadow:0 0 14px rgba(201,39,47,.8),0 2px 2px #000;text-transform:uppercase}
 #boss-ab{font-size:10px;letter-spacing:.3em;color:var(--blood-b);margin:2px 0 6px;font-weight:600}
-#boss-bar{height:14px;border:1px solid #4a3826;background:#100a0e;box-shadow:inset 0 0 8px rgba(0,0,0,.7);overflow:hidden}
-#boss-fill{height:100%;width:100%;background:linear-gradient(90deg,#5a0f14,#c9272f 60%,#ff5a5f);
+#boss-bar{height:15px;border:1px solid #4a3826;background:#100a0e;overflow:hidden;
+box-shadow:inset 0 0 8px rgba(0,0,0,.7),0 0 22px rgba(201,39,47,.4)}
+#boss-fill{height:100%;width:100%;background:linear-gradient(90deg,#5a0f14,#c9272f 55%,#ff5a5f);
 box-shadow:0 0 14px rgba(201,39,47,.6);transition:width .15s}
 #kills{position:absolute;bottom:24px;left:24px;display:flex;align-items:center;gap:10px;
 font-size:10px;letter-spacing:.3em;color:var(--bronze-b);font-weight:600}
@@ -1417,25 +1418,152 @@ const ZTORSO=[
 "....R..R......",
 "...KKKKK......"];
 const ZPIV=[7,14], ZSH_F=[1,23], ZSH_B=[-1,23];
-/* ---- TORSO DEL JEFE: más ancho, hombros masivos, cuernos (U), ojos brillantes ---- */
-const BTORSO=[
-"......KKKKKK......",
-".UU..KHHHHHK..UU..",
-".UU.KHEHHHEHK.UU..",
-".....KHHHHHHK.....",
-".....KWWKKWWK.....",
-"......KKKKKK......",
-".KKKRRRRRRRRKKK...",
-".KRRRRRRRRRRRRK...",
-".KRrRRRRRRRRrRK...",
-".KRRRRDDRRRRRRK...",
-".KRrRRRRRRRRrRK...",
-"..KRRRRRRRRRRK....",
-"...KRRRRRRRRK.....",
-"....KRRRRRRK......",
-".....KK..KK.......",
-"....KKK..KKK......"];
-const BPIV=[9,14];
+/* ================= JEFES: 4 ARQUETIPOS PIXEL ART ================= */
+const CHEF_TORSO=[
+".....KKKKKK.....",
+"....KWWWWWWK....",
+"....KWWWWWWK....",
+"....KHHHHHHK....",
+"....KHEHHEHK....",
+"....KHHHHHHK....",
+"....KHHHHHHK....",
+".....KKKKKK.....",
+"..KKCCCCCCCKK...",
+".KCCCCCCCCCCCK..",
+".KCCCCCCCCCCCK..",
+".KCCCCCCCCCCCK..",
+".KCCCCCCCCCCCK..",
+"..KKCCCCCCCKK...",
+"....KKCCCCKK....",
+".....KKKKKK.....",
+"....KK....KK...."];
+const DEMON_TORSO=[
+".KK..KKKKKK..KK.",
+".KHK.KHHHHHK.KHK",
+"..KK.KHEHHEHK.KK",
+".....KHHHHHHK...",
+".....KWKWWKWK...",
+".....KKKKKKKK...",
+"..KKRRRRRRRRKK..",
+".KRRRRRRRRRRRRK.",
+".KRRRRRRRRRRRRK.",
+".KRRRRRRRRRRRRK.",
+".KRRRRRRRRRRRRK.",
+"..KKRRRRRRRRKK..",
+"....KKRRRRRRKK..",
+".....KKRRRRKK...",
+"......KKKKKK....",
+"....KK....KK...."];
+const KNIGHT_TORSO=[
+".....KKKKKK.....",
+"....KMMMMMMK....",
+"....KMMMMMMK....",
+"....KKEEEEEK....",
+"....KMMMMMMK....",
+"....KMMMMMMK....",
+".....KKKKKK.....",
+"..KKMMMMMMMMKK..",
+".KMMMMMMMMMMMMK.",
+".KMMMMMMMMMMMMK.",
+".KMMmMMMMmMMMMK.",
+".KMMMMMMMMMMMMK.",
+"..KKMMMMMMMMKK..",
+"....KKMMMMKK....",
+".....KKKKKK.....",
+"....KK....KK...."];
+const WINGS=[
+"KKK..........KKK",
+"KRRRK......KRRRK",
+"KRRRRK....KRRRRK",
+"KRRRRRK..KRRRRRK",
+"KRRRRRRKKRRRRRRK",
+".KRRRRRRRRRRRRK.",
+"..KRRRRRRRRRRK.."];
+const BOSS_TYPES=[
+{id:'chef', names:['GORDO, EL CARNICERO','EL CHEF DE LA PESTE','MORCILLA, EL COCINERO'],
+ hpMul:16, speed:1.7, dmg:24, torso:CHEF_TORSO, piv:[7,14],
+ pal:{K:'#05060a',H:'#c8a284',h:'#a8826a',E:'#ff8a2a',W:'#e8e4da',C:'#d8d4c8'},
+ weapons:['cleaver','knife','club','hook']},
+{id:'demon',names:['AZAZEL, EL ALADO','BELIAL, LANGUA DE FUEGO','EL DEMONIO ROJO'],
+ hpMul:14, speed:2.5, dmg:22, torso:DEMON_TORSO, piv:[7,14], wings:true,
+ pal:{K:'#05060a',H:'#a02020',h:'#7a1414',E:'#ffd24a',W:'#e8e4da',R:'#a02020'},
+ weapons:['spear','sword','scythe','trident']},
+{id:'laser',names:['EL COLOSO OJOS DE SOL','GOLIAT, EL QUE MIRMA','EL VIGÍA CORRUPTO'],
+ hpMul:20, speed:1.4, dmg:18, laser:true, torso:ZTORSO, piv:[7,14],
+ pal:{K:'#05060a',H:'#7a8f6a',h:'#566b48',E:'#4adfff',W:'#cfc8a0',R:'#33241f',r:'#1d1410'},
+ weapons:['staff','stick','hammer']},
+{id:'knight',names:['SIR VALEMORT, EL CAÍDO','EL CABALLERO DE LA CRIPTA','DON FERRO, EL SIN ALMA'],
+ hpMul:24, speed:1.5, dmg:28, torso:KNIGHT_TORSO, piv:[7,14],
+ pal:{K:'#05060a',M:'#9aa0b5',m:'#6a6f7c',E:'#4adfff'},
+ weapons:['sword','axe','hammer','spear','greatsword']}
+];
+/* ---- ARMAS DE JEFE EN PIXEL ART (empuñadas al azar) ---- */
+const WEAPON_PAL={K:'#05060a',W:'#c9ccd6',W2:'#8a8f9c',B:'#d8d0c0',M:'#9aa0b5',S:'#6e4527',S2:'#4a2e18',H:'#8a8f9c'};
+const WEAPONS={
+sword:{piv:[1,1],rows:[
+".............K",
+"KKHWWWWWWWWWWK",
+"KKHWWWWWWWWWWK",
+".............K"]},
+greatsword:{piv:[1,2],rows:[
+"..............K",
+"..............K",
+"KKHHWWWWWWWWWWK",
+"..............K",
+"..............K"]},
+katana:{piv:[1,1],rows:[
+"............K",
+"KKHWWWWWWWWWK",
+"............K"]},
+spear:{piv:[1,1],rows:[
+".............KB",
+"SSSSSSSSSSSSSKB",
+".............KB"]},
+trident:{piv:[1,1],rows:[
+"K...........K",
+"SSSSSSSSSSSSSK",
+"K...........K"]},
+cleaver:{piv:[1,4],rows:[
+".KKKKKKKKKKK",
+".KWWWWWWWWWK",
+".KWWWWWWWWWK",
+".KWWWWWWWWWK",
+".KKKKKKKKKKK",
+".SS...........",
+".SS..........."]},
+knife:{piv:[1,2],rows:[
+".KKKKKKKKK",
+".KWWWWWWWK",
+".KKKKKKKKK",
+".SS......."]},
+stick:{piv:[1,0],rows:[
+"SSSSSSSSSSSSSS"]},
+staff:{piv:[1,1],rows:[
+".............M",
+"SSSSSSSSSSSSSM",
+".............M"]},
+axe:{piv:[1,2],rows:[
+"......KWWK",
+"......KWWK",
+"SSSSSSKWWK",
+"......KWWK",
+"......KKKK"]},
+hammer:{piv:[1,2],rows:[
+"......KMMK",
+"......KMMK",
+"SSSSSSKMMK",
+"......KMMK",
+"......KMMK"]},
+club:{piv:[1,2],rows:[
+".......KWK",
+".......KWWK",
+"SSSSSSKWWK",
+".......KWK"]}
+};
+const weaponCanvases={};
+for(const k in WEAPONS){weaponCanvases[k]=pxCanvas(WEAPONS[k].rows,WEAPON_PAL);}
+const wingsCanvas=pxCanvas(WINGS,{K:'#05060a',R:'#7a1414'});
+/* ================================================================ */
 const ZCLASSES={
 normal:{sx:1.0,  sy:1.0,  hpMul:1.0, speedMul:1.0,  dmg:9,  cash:7,  tag:'normal'},
 fat:   {sx:1.34, sy:1.04, hpMul:1.9, speedMul:0.78, dmg:13, cash:15, tag:'gordo'},
@@ -1487,51 +1615,20 @@ for(let k=0;k<n;k++){ const rx=2+((Math.random()*10)|0), ry=6+((Math.random()*5)
 if(ZTORSO[ry]&&ZTORSO[ry][rx]==='R') g.fillRect(rx,ry,1+((Math.random()*2)|0),1+((Math.random()*2)|0)); } }
 return cv;
 }
-/* ---- GENERADOR DE JEFE: colores + torso con cuernos ---- */
-function makeBossColors(){
-const skins=[['#8a4a5a','#542a3a'],['#5a7a4a','#3a4a2a'],['#4a5a7a','#2a3a54'],
-['#7a6a3a','#4a3a1a'],['#6a4a7a','#3a2a4a'],['#7a7a7a','#4a4a4a']];
-const cloths=[['#23232e','#14141c'],['#2a2020','#181010'],['#20262a','#101418'],['#26202a','#141018']];
-const eyes=['#ff2a1a','#ffd24a','#7aff6a','#4adfff','#ff6ad0','#ff8a2a'];
-const horns=['#d8d0c0','#20202a','#8a8274'];
-const sk=pick(skins),cl=pick(cloths);
-const j=((Math.random()*2-1)*12)|0;
-return {skin:shade(sk[0],j),skin2:shade(sk[1],j-6),
-cloth:shade(cl[0],((Math.random()*2-1)*8)|0),cloth2:shade(cl[1],((Math.random()*2-1)*8)|0),
-eye:pick(eyes),teeth:'#cfc8a0',blood:'#5a0d10',horn:pick(horns)};
-}
-function makeBossTorso(c){
-const map={K:'#05060a',H:c.skin,h:c.skin2,E:c.eye,W:c.teeth,R:c.cloth,r:c.cloth2,D:c.blood,U:c.horn};
-return pxCanvas(BTORSO,map);
-}
-const BOSS_FIRST=['GORE','KARN','VOR','MAL','NECR','ZAR','URG','BAL','ORG','THAL'];
-const BOSS_LAST=['TH','OR','AK','UTH','AR','OG','GOR','MOR'];
-const BOSS_EPITHET=['EL CARNICERO','LA PLAGA','EL DEVORADOR','EL OLVIDADO','EL TIRANO','LA HAMBRUNA','EL SEGADOR','LA BESTIA'];
-const BOSS_ABILITIES=[
-{id:'tank', name:'BLINDADO'},
-{id:'swift',name:'VELOZ'},
-{id:'brutal',name:'BRUTAL'},
-{id:'regen',name:'REGENERADOR'}];
-function makeBossName(){return pick(BOSS_FIRST)+pick(BOSS_LAST)+' · '+pick(BOSS_EPITHET);}
-function pickBossAbilities(){
-const pool=[...BOSS_ABILITIES];
-const n=Math.random()<0.5?1:2;
-const out=[];
-for(let i=0;i<n;i++){const idx=(Math.random()*pool.length)|0;out.push(pool.splice(idx,1)[0]);}
-return out;
-}
 function zpr(g,x,y,w,h,c){g.fillStyle=c;g.fillRect(x,y,w,h);}
 function zLeg(g,hx,hy,thigh,knee,behind,col){
-g.save();g.translate(hx,-hy);g.rotate(-thigh*LEG_DIR);
-zpr(g,-1,0,3,6,behind?col.cloth2:col.cloth);zpr(g,-1,0,1,6,'#05060a');zpr(g,1,0,1,6,'#05060a');
-zpr(g,-1,4,3,2,col.cloth2);
+g.save();g.translate(hx,-hy);
+g.rotate(-thigh*LEG_DIR);
+zpr(g,-1,0,3,6,behind?'#101218':'#171a24');zpr(g,-1,0,1,6,'#05060a');zpr(g,1,0,1,6,'#05060a');
+zpr(g,-1,4,3,2,'#3a3f55');
 g.translate(0,6);g.rotate(knee*LEG_DIR);
-zpr(g,-1,0,3,6,behind?col.skin2:col.skin);zpr(g,-1,0,1,6,'#05060a');
+zpr(g,-1,0,3,6,behind?'#191c26':'#262a38');zpr(g,-1,0,1,6,'#05060a');
 zpr(g,-1,5,4,3,col.skin2);zpr(g,-1,7,4,1,'#05060a');
 g.restore();
 }
 function zArm(g,hx,hy,ang,behind,col){
-g.save();g.translate(hx,-hy);g.rotate(-ang);
+g.save();g.translate(hx,-hy);
+g.rotate(-ang);
 zpr(g,-1,-1,1,3,'#05060a');
 zpr(g,0,-1,6,3,behind?col.skin2:col.skin);zpr(g,0,-1,6,1,col.skin2);
 zpr(g,5,-2,3,5,col.skin2);zpr(g,5,-2,3,1,col.skin);
@@ -1544,12 +1641,18 @@ const piv=z.torsoPiv||ZPIV;
 g.clearRect(0,0,SC,SC);
 g.save();g.translate(CX,FEET);g.scale(p.dir,1);
 if(p.dead){g.rotate(p.dir*p.dead.rot);g.translate(0,p.dead.sink);g.globalAlpha=p.dead.fade;}
+if(z.wings){g.save();g.translate(BODY_BASE[0],-(BODY_BASE[1]+bob));g.scale(1.4,1.4);
+g.drawImage(wingsCanvas,-8,-6);g.restore();}
 zLeg(g,HIP_B[0],HIP_B[1]+bob,p.thighB,p.kneeB,true,col);
 zArm(g,ZSH_B[0],ZSH_B[1]+bob,p.armB,true,col);
 g.save();g.translate(BODY_BASE[0],-(BODY_BASE[1]+bob));g.rotate(p.lean);
 g.drawImage(z.torsoImg,-piv[0],-piv[1]);g.restore();
 zLeg(g,HIP_F[0],HIP_F[1]+bob,p.thighF,p.kneeF,false,col);
 zArm(g,ZSH_F[0],ZSH_F[1]+bob,p.armF,false,col);
+if(z.weapon){const wv=WEAPONS[z.weapon];const a=p.armF;
+const hx=ZSH_F[0]+Math.cos(a)*7, hy=ZSH_F[1]+Math.sin(a)*7;
+g.save();g.translate(hx,-hy);g.rotate(-a);
+g.drawImage(weaponCanvases[z.weapon],-wv.piv[0],-wv.piv[1]);g.restore();}
 g.restore();
 z.tex.needsUpdate=true;
 }
@@ -1576,7 +1679,7 @@ const hpFill=new THREE.Mesh(new THREE.PlaneGeometry(0.92,0.10),hpFillMat);hpFill
 hpbar.add(hpBorder);hpbar.add(hpBg);hpbar.add(hpFill);
 hpbar.position.set(0,2.15,0.15);hpbar.visible=false;scene.add(hpbar);
 return{mesh,blob:bl,blobMat,ctx,tex,mat,torsoImg:null,colors:null,cls:ZCLASSES.normal,
-x:0,sx:1,sy:1,meshBaseY:MESH_CENTER_Y,hpbarBaseY:2.15,dmg:9,torsoPiv:null,
+x:0,sx:1,sy:1,meshBaseY:MESH_CENTER_Y,hpbarBaseY:2.15,dmg:9,torsoPiv:null,weapon:null,wings:false,
 hpbar,hpFill,hpFillMat,maxhp:1,
 pose:{dir:1,thighF:0,thighB:0,kneeF:0,kneeB:0,lean:.2,armF:0,armB:0,bob:0,dead:null}};
 }
@@ -1605,48 +1708,48 @@ zombies.push(z);
 spawnFlash(x); sfx('spawn');
 if(Math.abs(x-P.x)<40)sfx('moan');
 }
-/* ---- SPAWN DEL JEFE ---- */
+/* ---- SPAWN DE JEFE: cada 2 oleadas, mucha vida, arma aleatoria ---- */
+let bossSpawnedThisWave=false;
 function spawnBoss(){
 const side=Math.random()<.5?-1:1;
 const x=side*(WORLD_LIMIT-1.5);
 const z=buildZombie();
-z.isBoss=true;
-z.name=makeBossName();
-z.abilities=pickBossAbilities();
-const has=id=>z.abilities.some(a=>a.id===id);
-const scale=R(2.1,2.5);
-z.sx=scale*R(1.0,1.1); z.sy=scale;
-let hp=(140+wave*20)*6;
-if(has('tank'))hp*=1.6;
-z.hp=hp; z.maxhp=hp;
-let spd=R(1.6,2.2)+wave*0.05;
-if(has('swift'))spd*=1.5;
-z.speed=spd;
-z.dmg=has('brutal')?40:26;
-z.regen=has('regen')?(z.maxhp*0.02):0;
-z.tankMult=has('tank')?0.6:1;
-z.hitTop=3.4; z.headY=2.7;
+const type=pick(BOSS_TYPES);
+z.isBoss=true; z.bossType=type.id;
+z.name=pick(type.names);
+z.torsoImg=pxCanvas(type.torso,type.pal);
+z.torsoPiv=type.piv;
+z.wings=!!type.wings;
+z.laser=!!type.laser;
+z.laserCd=R(2,4);
+z.weapon=pick(type.weapons);
+const colors=makeZombieColors();
+z.colors=Object.assign({},type.pal,{skin2:type.pal.h||type.pal.skin,skin:type.pal.H||type.pal.M,blood:'#5a0d10'});
+const scale=R(2.2,2.7);
+z.sx=scale; z.sy=scale;
+z.dmg=type.dmg;
+z.hp=(140+wave*20)*type.hpMul; z.maxhp=z.hp;
+z.speed=type.speed;
 z.meshBaseY=MESH_CENTER_Y*z.sy;
 z.hpbarBaseY=2.15*z.sy;
 z.mesh.scale.set(z.sx,z.sy,1);
 z.blob.scale.set(z.sx,1,1);
-z.colors=makeBossColors();
-z.torsoImg=makeBossTorso(z.colors);
-z.torsoPiv=BPIV;
-z.hpbar.visible=false;
-z.x=x; z.ph=R(0,9); z.stagger=0;z.atkCd=R(0,.5);z.windup=0;z.dead=false;z.fallT=0;
+z.ph=R(0,9);
+z.stagger=0;z.atkCd=R(0,.5);z.windup=0;z.dead=false;z.fallT=0;
 z.mesh.position.set(x,z.meshBaseY,0.1);
 z.blob.position.set(x,0.02,0);
+z.hpbar.visible=false;
 zombies.push(z);
 spawnFlash(x); sfx('bossroar');
-showBanner('JEFE · '+z.name,'HABILIDADES: '+z.abilities.map(a=>a.name).join(' + '));
+showBanner('JEFE · '+z.name,'¡PREPÁRATE PARA EL COMBATE!');
 bossHud.classList.add('show');
 bossName.textContent=z.name;
-bossAb.textContent=z.abilities.map(a=>a.name).join(' + ');
+bossAb.textContent='JEFE · '+type.id.toUpperCase();
 }
 function killZombie(z){
 z.dead=true;z.fallT=0;z.hpbar.visible=false;kills++;killNum.textContent=kills;
-money += z.isBoss?150:z.cls.cash; setMoney(); floatNum(z.x,1.7,'+'+(z.isBoss?150:z.cls.cash),'#f0d089');
+const reward=z.isBoss?200:z.cls.cash;
+money += reward; setMoney(); floatNum(z.x,1.7,'+'+reward,'#f0d089');
 const d=new THREE.Mesh(decalGeo,bas(0x240607,{transparent:true,opacity:.8}));
 d.rotation.x=-Math.PI/2;d.position.set(z.x,.013,R(-.3,.3));d.scale.setScalar(R(.5,.9));
 scene.add(d);decals.push(d);if(decals.length>40)scene.remove(decals.shift());
@@ -1754,7 +1857,7 @@ sfx('gthrow');
 function explodeGrenade(x,y){
 for(const z of zombies){if(z.dead)continue;
 const d=Math.hypot(z.x-x,0-(y));
-if(d<GRENADE_RADIUS){const dmg=GRENADE_DMG*(1-d/GRENADE_RADIUS)*(z.tankMult||1);
+if(d<GRENADE_RADIUS){const dmg=GRENADE_DMG*(1-d/GRENADE_RADIUS);
 z.hp-=dmg;z.stagger=.4;blood(_v1.set(z.x,1.0,0.2),6);
 if(z.hp<=0)killZombie(z);}}
 const dp=Math.hypot(P.x-x,P.y-y);
@@ -1820,14 +1923,17 @@ const sc=s.sc0*(1+k*2.2);s.s.scale.set(sc,sc,1);
 s.s.material.opacity=Math.sin(k*Math.PI)*0.4;}
 }
 let AC=null,master,noiseBuf;
+//VOLUMEN MUSICA
 const bgm=document.getElementById('bgm');
-if(bgm){bgm.volume=0.2;bgm.loop=true;}
+if(bgm){bgm.volume=0.2;bgm.loop=true;}//VOLUMEN MUSICA
 function bgmStart(){if(bgm){bgm.currentTime=0;bgm.play().catch(()=>{});}}
 function bgmPause(){if(bgm)bgm.pause();}
 function bgmResume(){if(bgm)bgm.play().catch(()=>{});}
+//SONIDO DE DISPARO M4
 const shotPool=[];for(let i=0;i<8;i++){const a=new Audio('assets/disparo_m4.mp3');a.preload='auto';a.volume=0.1;shotPool.push(a);}
 let shotPoolIdx=0;
 function playShotSfx(){if(!shotPool.length)return;const a=shotPool[shotPoolIdx++%shotPool.length];a.currentTime=0;a.play().catch(()=>{});}
+//FIN DISPARO M4
 function initAudio(){if(AC)return;AC=new(window.AudioContext||window.webkitAudioContext)();
 master=AC.createGain();master.gain.value=.4;master.connect(AC.destination);
 noiseBuf=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);
@@ -1857,6 +1963,13 @@ const g=AC.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTim
 g.gain.linearRampToValueAtTime(0,t+.95);const lfo=AC.createOscillator();lfo.frequency.value=5;
 const lg=AC.createGain();lg.gain.value=.05;lfo.connect(lg);lg.connect(g.gain);
 o.connect(f);f.connect(g);g.connect(master);o.start(t);o.stop(t+1);lfo.start(t);lfo.stop(t+1);}
+else if(n==='bossroar'){const o=AC.createOscillator();o.type='sawtooth';o.frequency.setValueAtTime(60,t);
+o.frequency.exponentialRampToValueAtTime(28,t+1.4);
+const f=AC.createBiquadFilter();f.type='lowpass';f.frequency.value=260;
+const g=AC.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.4,t+.15);
+g.gain.linearRampToValueAtTime(0,t+1.4);
+o.connect(f);f.connect(g);g.connect(master);o.start(t);o.stop(t+1.5);}
+else if(n==='laser'){nz(t,.3,'highpass',1800,400,.3);tone(t,.3,'sawtooth',900,200,.2);}
 else if(n==='hit'){nz(t,.06,'lowpass',500,150,.4);tone(t,.06,'sine',80,45,.3);}
 else if(n==='zdie'){sfx('hit');tone(t,.5,'sawtooth',90,35,.16);}
 else if(n==='hurt'){tone(t,.22,'sawtooth',130,55,.3);nz(t,.15,'lowpass',700,200,.3);}
@@ -1864,12 +1977,6 @@ else if(n==='zatk'){tone(t,.18,'sawtooth',110,70,.14);nz(t,.12,'lowpass',600,200
 else if(n==='thud'){nz(t,.12,'lowpass',420,90,.5);tone(t,.16,'sine',70,38,.35);}
 else if(n==='ric'){nz(t,.05,'highpass',2200,null,.22);nz(t,.04,'bandpass',3200,1600,.18);tone(t,.03,'square',1200,800,.08);}
 else if(n==='spawn'){tone(t,.22,'sine',240,110,.16);tone(t,.16,'triangle',720,980,.07);nz(t,.18,'bandpass',1000,2400,.09);}
-else if(n==='bossroar'){const o=AC.createOscillator();o.type='sawtooth';o.frequency.setValueAtTime(50,t);
-o.frequency.exponentialRampToValueAtTime(30,t+1.2);
-const f=AC.createBiquadFilter();f.type='lowpass';f.frequency.value=220;
-const g=AC.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.3,t+.15);
-g.gain.linearRampToValueAtTime(0,t+1.2);
-o.connect(f);f.connect(g);g.connect(master);o.start(t);o.stop(t+1.3);}
 else if(n==='gate'){nz(t,.35,'bandpass',300,900,.18);tone(t,.3,'sawtooth',220,90,.12);nz(t+.1,.2,'highpass',1400,null,.1);}
 else if(n==='gthrow'){nz(t,.08,'bandpass',600,300,.3);tone(t,.1,'sine',300,180,.18);}
 else if(n==='gboom'){nz(t,.5,'lowpass',1200,80,1.0);tone(t,.4,'sine',90,35,.6);
@@ -1998,13 +2105,13 @@ function closeShop(){shopEl.classList.remove('show');state='combat';
 toSpawn=3+wave*2;spawnGap=Math.max(.5,1.4-wave*.08);spawnT=.9;}
 document.getElementById('shop-continue').addEventListener('click',closeShop);
 let state='title',wave=0,kills=0,toSpawn=0,spawnT=0,spawnGap=1.2,interT=0,shake=0,
-camX=0,camOff=0,camLY=1.3,pausedFrom='',flashT=0,thudCd=0,bossSpawned=false;
+camX=0,camOff=0,camLY=1.3,pausedFrom='',flashT=0,thudCd=0;
 const SHOULDER_WORLD_Y=SHOULDER[1]*PX2;
 const MESH_CENTER_Y=(FEET-SC/2)*PX2;
 function resetProgress(){money=0;maxHp=100;dmgMul=1;speedMul=1;levels.hp=0;levels.dmg=0;levels.spd=0;
 ownedW.shot=false;ownedW.snip=false;curWeapon='m4';
 weapons.m4.ammo=weapons.m4.mag;weapons.shot.ammo=weapons.shot.mag;weapons.snip.ammo=weapons.snip.mag;}
-function startGame(){resetProgress();state='intermission';wave=1;interT=2.4;bossSpawned=false;
+function startGame(){resetProgress();state='intermission';wave=1;interT=2.4;bossSpawnedThisWave=false;
 titleEl.classList.add('hidden');document.body.classList.remove('intitle');document.body.classList.add('playing');
 bgmStart();
 showBanner('OLEADA 1','LOS MUERTOS SE ACERCAN');waveHud.textContent='OLEADA 1';
@@ -2024,12 +2131,12 @@ grenadeMesh.visible=false;grenadeGlow.intensity=0;hideTrajectory();
 Object.assign(P,{x:0,y:0,vy:0,facing:1,hp:100,ammo:30,reloadKey:null,reloadT:0,fireCd:0,recoil:0,invuln:0,
 dead:false,deadT:0,wasAir:false,aimAng:0});
 P.mouthWorld.set(0.5,1.4,0.3);flashT=0;thudCd=0;
-kills=0;killNum.textContent='0';wave=1;state='intermission';interT=2.4;bossSpawned=false;
+kills=0;killNum.textContent='0';wave=1;state='intermission';interT=2.4;bossSpawnedThisWave=false;
 bossHud.classList.remove('show');
 goEl.classList.remove('show');resetProgress();setMoney();setAmmo();setHP();
 showBanner('OLEADA 1','LOS MUERTOS SE ACERCAN');waveHud.textContent='OLEADA 1';sfx('bell');}
 function segHit2D(ox,oy,dx,dy,maxT,z){
-const rx0=z.x-.4,rx1=z.x+.4,ry0=0,ry1=z.hitTop||2.0;
+const rx0=z.x-.4,rx1=z.x+.4,ry0=0,ry1=z.hitTop||(z.isBoss?2.0*z.sy:2.0);
 let tmin=0,tmax=maxT;
 if(Math.abs(dx)<1e-6){ if(ox<rx0||ox>rx1)return -1; }
 else { let t1=(rx0-ox)/dx,t2=(rx1-ox)/dx; if(t1>t2){const q=t1;t1=t2;t2=q;}
@@ -2063,8 +2170,8 @@ const hitWall=txmax<=tymax, hitFloor=(!hitWall&&endY<=0.06);
 let bestT=-1,bestZ=null;
 for(const z of zombies){if(z.dead)continue;const tt=segHit2D(ox,oy,dx,dy,tExit,z);
 if(tt>=0&&(bestT<0||tt<bestT)){bestT=tt;bestZ=z;}}
-if(bestZ){const hx=ox+dx*bestT, hy=oy+dy*bestT;const head=hy>(bestZ.headY||1.45);
-const dmg=(head?w.head:w.body)*dmgMul*(bestZ.tankMult||1);bestZ.hp-=dmg;bestZ.stagger=.18;
+if(bestZ){const hx=ox+dx*bestT, hy=oy+dy*bestT;const head=hy>(bestZ.isBoss?1.45*bestZ.sy:1.45);
+const dmg=(head?w.head:w.body)*dmgMul;bestZ.hp-=dmg;bestZ.stagger=.18;
 blood(_v1.set(hx,hy,.2),5);spawnImpact(hx,hy);sfx('hit');
 if(bestZ.hp<=0)killZombie(bestZ);
 spawnZap(_v3.set(ox,oy,.45),_dir.set(dx,dy,0),bestT,'body',hx,hy);
@@ -2175,13 +2282,23 @@ if(interT<=0){state='combat';toSpawn=3+wave*2;spawnGap=Math.max(.5,1.4-wave*.08)
 if(state==='combat'){
 if(toSpawn>0){spawnT-=dt;if(spawnT<=0){spawnZombie();toSpawn--;spawnT=spawnGap;}}
 else if(zombies.every(z=>z.dead)){
-if(wave%2===0 && !bossSpawned){ bossSpawned=true; spawnBoss(); }
-else{ bossSpawned=false; wave++;money+=15;setMoney();
+if(!bossSpawnedThisWave && (wave%2===0)){ bossSpawnedThisWave=true; spawnBoss(); }
+else { bossSpawnedThisWave=false; wave++;money+=15;setMoney();
 P.hp=Math.min(maxHp,P.hp+10);setHP();
-sfx('bell');openShop();}}}
+sfx('bell');openShop(); }}}
+/* Barra de jefe + ataque láser del gigante */
+const bz=zombies.find(z=>z.isBoss&&!z.dead);
+if(bz){bossHud.classList.add('show');bossName.textContent=bz.name;
+bossAb.textContent='JEFE · '+bz.bossType.toUpperCase();
+bossFill.style.width=clamp(bz.hp/bz.maxhp*100,0,100)+'%';
+if(bz.laser){bz.laserCd-=dt;
+if(bz.laserCd<=0){bz.laserCd=R(2.5,4.5);
+if(!P.dead){hurtPlayer(bz.dmg); sfx('laser');
+const beam=spawnZapFree(_v1.set(bz.x,1.45*bz.sy,0.2),_dir.set(Math.sign(P.x-bz.x)||1,0,0),Math.abs(P.x-bz.x)+1);
+}}}
+}else{bossHud.classList.remove('show');}
 for(let i=zombies.length-1;i>=0;i--){const z=zombies[i];
 if(!z.dead){
-if(z.regen) z.hp=Math.min(z.maxhp,z.hp+z.regen*dt);
 const dir=P.x>z.x?1:-1; z.dir=dir;
 z.stagger-=dt; z.atkCd-=dt;
 const dist=Math.abs(P.x-z.x);
@@ -2199,20 +2316,20 @@ if(Math.random()<dt*.04&&dist<30)sfx('moan');
 }else{
 thighF=.12;thighB=-.12;kneeF=0;kneeB=0;lean=.30;armF=-0.35;armB=-0.25;bob=0;
 }
-if(dist<=1.05 && z.atkCd<=0 && z.windup<=0 && z.stagger<=0){ z.windup=0.30; if(Math.random()<.6)sfx('zatk'); }
+if(dist<=1.05*z.sy && z.atkCd<=0 && z.windup<=0 && z.stagger<=0){ z.windup=0.30; if(Math.random()<.6)sfx('zatk'); }
 if(z.windup>0){ z.windup-=dt; armF=0.55; armB=0.45; lean=.42;
 if(z.windup<=0){ z.atkCd=0.8;
-if(Math.abs(P.x-z.x)<1.5 && P.y<BITE_REACH_Y) hurtPlayer(z.dmg); } }
+if(Math.abs(P.x-z.x)<1.5*z.sy && P.y<BITE_REACH_Y*z.sy) hurtPlayer(z.dmg); } }
 if(z.stagger>0){ lean+=.16; bob+=.4; }
 z.pose={dir,thighF,thighB,kneeF,kneeB,lean,armF,armB,bob,dead:null};
 drawZombie(z);
 z.mesh.position.x=z.x;
 z.blob.position.x=z.x; z.blobMat.opacity=.3;
 const fill=clamp(z.hp/z.maxhp,0,1);
-z.hpbar.position.x=z.x;
+if(!z.isBoss){z.hpbar.position.x=z.x;
 z.hpFill.scale.x=Math.max(fill,0.001);
 z.hpFill.position.x=-0.46*(1-fill);
-z.hpFillMat.color.setHex(fill>.5?0x33ff55:fill>.25?0xffc400:0xff2424);
+z.hpFillMat.color.setHex(fill>.5?0x33ff55:fill>.25?0xffc400:0xff2424);}
 }else{
 z.fallT+=dt;
 const fall=clamp(z.fallT*2.2,0,1);
@@ -2224,12 +2341,6 @@ drawZombie(z);
 z.mat.opacity=fade; z.blobMat.opacity=.3*fade;
 if(z.fallT>2.0){ scene.remove(z.mesh); scene.remove(z.blob); scene.remove(z.hpbar); zombies.splice(i,1); }
 }}
-/* ---- BARRA DE JEFE ---- */
-const bz=zombies.find(z=>z.isBoss&&!z.dead);
-if(bz){bossHud.classList.add('show');bossName.textContent=bz.name;
-bossAb.textContent=bz.abilities.map(a=>a.name).join(' + ');
-bossFill.style.width=clamp(bz.hp/bz.maxhp*100,0,100)+'%';}
-else bossHud.classList.remove('show');
 for(const c of casings){if(!c.m.visible)continue;c.life-=dt;
 if(c.life<=0){c.m.visible=false;continue;}
 c.v.y-=12*dt;c.m.position.addScaledVector(c.v,dt);
@@ -2295,6 +2406,12 @@ camera.position.set(camX+sx,2.3+Math.sin(t*1.1)*.04+sy,10.5);
 camera.lookAt(camX+camOff*1.1,camLY,0);
 }
 moon.quaternion.copy(camera.quaternion);
+}
+function spawnZapFree(origin,dir,dist){
+const z=grabZap();if(!z)return null;
+z.g.visible=true;z.prog=0;z.len=dist;z.o.copy(origin);z.d.copy(dir);
+z.kind='laserbeam';
+return z;
 }
 renderer.setAnimationLoop(()=>{const dt=Math.min(clock.getDelta(),.05),t=clock.elapsedTime;
 if(state!=='paused')update(dt,t);
