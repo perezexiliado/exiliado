@@ -1559,115 +1559,6 @@ const ZTORSO=[
 "....R..R......",
 "...KKKKK......"];
 const ZPIV=[7,14], ZSH_F=[1,23], ZSH_B=[-1,23];
-/* ================= JEFES: 4 ARQUETIPOS PIXEL ART ================= */
-const CHEF_TORSO=[
-".....KKKKKK.....",
-"....KWWWWWWK....",
-"....KWWWWWWK....",
-"....KHHHHHHK....",
-"....KHEHHEHK....",
-"....KHHHHHHK....",
-"....KHHHHHHK....",
-".....KKKKKK.....",
-"..KKCCCCCCCKK...",
-".KCCCCCCCCCCCK..",
-".KCCCCCCCCCCCK..",
-".KCCCCCCCCCCCK..",
-".KCCCCCCCCCCCK..",
-"..KKCCCCCCCKK...",
-"....KKCCCCKK....",
-".....KKKKKK.....",
-"....KK....KK...."];
-const DEMON_TORSO=[
-".KK..KKKKKK..KK.",
-".KHK.KHHHHHK.KHK",
-"..KK.KHEHHEHK.KK",
-".....KHHHHHHK...",
-".....KWKWWKWK...",
-".....KKKKKKKK...",
-"..KKRRRRRRRRKK..",
-".KRRRRRRRRRRRRK.",
-".KRRRRRRRRRRRRK.",
-".KRRRRRRRRRRRRK.",
-".KRRRRRRRRRRRRK.",
-"..KKRRRRRRRRKK..",
-"....KKRRRRRRKK..",
-".....KKRRRRKK...",
-"......KKKKKK....",
-"....KK....KK...."];
-const KNIGHT_TORSO=[
-".....KKKKKK.....",
-"....KMMMMMMK....",
-"....KMMMMMMK....",
-"....KKEEEEEK....",
-"....KMMMMMMK....",
-"....KMMMMMMK....",
-".....KKKKKK.....",
-"..KKMMMMMMMMKK..",
-".KMMMMMMMMMMMMK.",
-".KMMMMMMMMMMMMK.",
-".KMMmMMMMmMMMMK.",
-".KMMMMMMMMMMMMK.",
-"..KKMMMMMMMMKK..",
-"....KKMMMMKK....",
-".....KKKKKK.....",
-"....KK....KK...."];
-const DRACULA_TORSO=[
-"....KKKKKKKK....",
-"...KAAAAAAAAK...",
-"...KAHHHHHHAK...",
-"...KAHEHHEHAK...",
-"...KAHHHHHHAK...",
-"....KHHhHHK.....",
-"....KWWWWK......",
-"...KKWWWWKK.....",
-".KKCRRRRRRRCKK..",
-".KCCRRRRRRRCCK..",
-".KCCRRGGRRRCCK..",
-".KCCRRRRRRRCCK..",
-".KCCRRRRRRRCCK..",
-"..KKCRRRRRCCK...",
-"....KKCCCCKK....",
-".....KKKKKK.....",
-"....KK....KK...."];
-const WINGS=[
-"KKK..........KKK",
-"KRRRK......KRRRK",
-"KRRRRK....KRRRRK",
-"KRRRRRK..KRRRRRK",
-"KRRRRRRKKRRRRRRK",
-".KRRRRRRRRRRRRK.",
-"..KRRRRRRRRRRK.."];
-const BOSS_TYPES=[
-{id:'chef', names:['GORDO, EL CARNICERO','EL CHEF DE LA PESTE','MORCILLA, EL COCINERO'],
-hpMul:30, speed:1.7, dmg:34, torso:CHEF_TORSO, piv:[7,14],
-pal:{K:'#05060a',H:'#c8a284',h:'#a8826a',E:'#ff8a2a',W:'#e8e4da',C:'#d8d4c8'}},
-{id:'demon',names:['AZAZEL, EL ALADO','BELIAL, LANGUA DE FUEGO','EL DEMONIO ROJO'],
-hpMul:26, speed:2.5, dmg:30, torso:DEMON_TORSO, piv:[7,14], wings:true,
-pal:{K:'#05060a',H:'#a02020',h:'#7a1414',E:'#ffd24a',W:'#e8e4da',R:'#a02020'}},
-{id:'laser',names:['EL COLOSO OJOS DE SOL','GOLIAT, EL QUE MIRMA','EL VIGÍA CORRUPTO'],
-hpMul:36, speed:1.4, dmg:26, laser:true, torso:ZTORSO, piv:[7,14],
-pal:{K:'#05060a',H:'#7a8f6a',h:'#566b48',E:'#4adfff',W:'#cfc8a0',R:'#33241f',r:'#1d1410'}},
-{id:'knight',names:['SIR VALEMORT, EL CAÍDO','EL CABALLERO DE LA CRIPTA','DON FERRO, EL SIN ALMA'],
-hpMul:44, speed:1.5, dmg:42, torso:KNIGHT_TORSO, piv:[7,14],
-pal:{K:'#05060a',M:'#9aa0b5',m:'#6a6f7c',E:'#4adfff'}},
-{id:'drac',names:['DRÁCULA, SEÑOR DE LA NOCHE','VLAD, EL EMPALADOR','PRÍNCIPE DE LAS TINIEBLAS'],
-hpMul:34, speed:2.2, dmg:36, torso:DRACULA_TORSO, piv:[7,14], wings:true,
-pal:{K:'#05060a',H:'#d8c8b0',h:'#b0a088',E:'#ff2a1a',A:'#1a1024',C:'#241a30',R:'#7a1420',W:'#e8e4da',G:'#d4ab6a'}}
-];
-/* --- Paletas de jefe aclaradas para que el hi-def no se lea negro --- */
-(function(){
-const fix={
-chef:  {armor:'#4a4456',armor2:'#353040',armorHi:'#6c6478',A:'#3f3a4a',a:'#4a4454'},
-demon: {armor:'#6a1c1c',armor2:'#4a1212',armorHi:'#8a3030',A:'#5a1818',B:'#6a2020',G:'#d86aff'},
-laser: {armor:'#46543e',armor2:'#34402e',armorHi:'#6e7e60',A:'#5a6b4e',B:'#6a7c60'},
-knight:{armor:'#322e40',armor2:'#242032',armorHi:'#4e4860',A:'#3a3648',B:'#4a445c',G:'#d86aff'},
-drac:  {armor:'#2e2240',armor2:'#201630',armorHi:'#4c3c62',A:'#2a2038',C:'#3c2e4e',R:'#96262e',G:'#e0b06a'}
-};
-for(const t of BOSS_TYPES)Object.assign(t.pal,fix[t.id]);
-})();
-const wingsCanvas=pxCanvas(WINGS,{K:'#05060a',R:'#7a1414'});
-const wingsHD=hiDef(WINGS,{K:'#05060a',R:'#7a1414'},BOSS_RES);
 /* ================================================================ */
 const ZCLASSES={
 normal:{sx:1.0,  sy:1.0,  hpMul:1.0, speedMul:1.0,  dmg:9,  cash:7,  tag:'normal'},
@@ -1731,26 +1622,6 @@ zpr(g,-1,0,3,6,behind?'#191c26':'#262a38');zpr(g,-1,0,1,6,'#05060a');
 zpr(g,-1,5,4,3,col.skin2);zpr(g,-1,7,4,1,'#05060a');
 g.restore();
 }
-function bLeg(g,hx,hy,thigh,knee,behind,col){
-g.save();g.translate(hx,-hy);g.rotate(-thigh*LEG_DIR);
-const A=behind?col.armor2:col.armor;
-zpr(g,-2,0,4,7,A);zpr(g,-2,0,1,7,'#05060a');zpr(g,2,0,1,7,'#05060a');zpr(g,-1,0,2,1,behind?col.armor:col.armorHi);
-zpr(g,-2,5,4,2,col.glowD);
-g.translate(0,7);g.rotate(knee*LEG_DIR);
-zpr(g,-2,0,4,7,A);zpr(g,-2,0,1,7,'#05060a');zpr(g,2,0,1,7,'#05060a');
-zpr(g,0,1,1,4,col.glow);
-zpr(g,-2,6,5,3,'#05060a');zpr(g,-2,6,5,1,A);zpr(g,2,7,1,2,col.glowD);
-g.restore();}
-function bArm(g,hx,hy,ang,behind,col){
-g.save();g.translate(hx,-hy);g.rotate(-ang);
-const A=behind?col.armor2:col.armor;
-zpr(g,-2,-2,5,4,behind?col.armor2:col.armorHi);
-zpr(g,-2,-2,5,1,'#05060a');zpr(g,-2,2,5,1,'#05060a');zpr(g,-2,-2,1,4,'#05060a');zpr(g,3,-2,1,4,'#05060a');
-zpr(g,0,-1,7,3,A);zpr(g,0,-1,7,1,col.armorHi);zpr(g,0,2,7,1,'#05060a');
-zpr(g,6,-2,4,5,A);zpr(g,6,-2,4,1,'#05060a');zpr(g,6,3,4,1,'#05060a');
-zpr(g,7,-1,1,3,col.glow);
-zpr(g,10,-2,2,2,col.glow);zpr(g,10,1,2,2,col.glow);zpr(g,10,-1,2,1,col.glowD);
-g.restore();}
 function zArm(g,hx,hy,ang,behind,col){
 g.save();g.translate(hx,-hy);
 g.rotate(-ang);
@@ -1764,14 +1635,12 @@ function drawZombie(z){
 const g=z.ctx,p=z.pose,bob=p.bob||0,col=z.colors;
 const piv=z.torsoPiv||ZPIV;
 const rs=z.resScale||1;
-const legFn=col.armor?bLeg:zLeg,armFn=col.armor?bArm:zArm;
+const legFn=zLeg,armFn=zArm;
 g.setTransform(1,0,0,1,0,0);
 g.clearRect(0,0,g.canvas.width,g.canvas.height);
 g.setTransform(rs,0,0,rs,0,0);
 g.save();g.translate(CX,FEET);g.scale(p.dir,1);
 if(p.dead){g.rotate(p.dir*p.dead.rot);g.translate(0,p.dead.sink);g.globalAlpha=p.dead.fade;}
-if(z.wings){g.save();g.translate(BODY_BASE[0],-(BODY_BASE[1]+bob));
-g.drawImage(wingsHD,-8*1.4,-6*1.4,wingsHD.width*1.4/rs,wingsHD.height*1.4/rs);g.restore();}
 legFn(g,HIP_B[0],HIP_B[1]+bob,p.thighB,p.kneeB,true,col);
 armFn(g,ZSH_B[0],ZSH_B[1]+bob,p.armB,true,col);
 g.save();g.translate(BODY_BASE[0],-(BODY_BASE[1]+bob));g.rotate(p.lean);
@@ -1785,16 +1654,19 @@ z.tex.needsUpdate=true;
 const DEMON_BASE='assets/bossdemon/individual%20sprites/';
 const DEMON_ANIMS={
 idle:{fps:8,frames:[]},
-walk:{fps:12,frames:[]},
+walk:{fps:5,frames:[]},
 cleave:{fps:14,frames:[]},
 take_hit:{fps:10,frames:[]},
 death:{fps:10,frames:[]}
 };
 let demonReady=false,demonPend=5;
 let DEMON_CROP=null;
+let DEMON_DRAW_H=240,DEMON_DRAW_W=240;
+let DEMON_HITTOP_F=2.0,DEMON_HITHALF_F=0.5,DEMON_HEAD_F=1.3;
 function demonSeqDone(){if(--demonPend>0)return;
 try{
 let minX=1e9,minY=1e9,maxX=-1,maxY=-1;
+let bMinX=1e9,bMinY=1e9,bMaxX=-1,bMaxY=-1;
 const cv=document.createElement('canvas');
 for(const k in DEMON_ANIMS)for(const im of DEMON_ANIMS[k].frames){
 if(im.naturalWidth>cv.width)cv.width=im.naturalWidth;
@@ -1803,9 +1675,25 @@ const g=cv.getContext('2d',{willReadFrequently:true});
 for(const k in DEMON_ANIMS)for(const im of DEMON_ANIMS[k].frames){
 g.clearRect(0,0,cv.width,cv.height);g.drawImage(im,0,0);
 const d=g.getImageData(0,0,cv.width,cv.height).data;
+let f0=1e9,f1=1e9,f2=-1,f3=-1;
 for(let y=0;y<cv.height;y++)for(let x=0;x<cv.width;x++){if(d[(y*cv.width+x)*4+3]>8){
-if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y;}}}
+if(x<f0)f0=x;if(x>f2)f2=x;if(y<f1)f1=y;if(y>f3)f3=y;}}
+if(f2<0)continue;
+if(f0<minX)minX=f0;if(f2>maxX)maxX=f2;
+if(f1<minY)minY=f1;if(f3>maxY)maxY=f3;
+if(k==='idle'||k==='walk'||k==='take_hit'){
+if(f0<bMinX)bMinX=f0;if(f2>bMaxX)bMaxX=f2;
+if(f1<bMinY)bMinY=f1;if(f3>bMaxY)bMaxY=f3;}}
 if(maxX>=0)DEMON_CROP={x:minX,y:minY,w:maxX-minX+1,h:maxY-minY+1};
+if(DEMON_CROP&&bMaxX>=0){
+const aspect=DEMON_CROP.w/DEMON_CROP.h;
+let dh=240,dw=dh*aspect;
+if(dw>284){dw=284;dh=dw/aspect;}
+DEMON_DRAW_H=dh;DEMON_DRAW_W=dw;
+const k3=dh/DEMON_CROP.h;
+DEMON_HITTOP_F=Math.max(1.0,(dh-(bMinY-DEMON_CROP.y)*k3)/120);
+DEMON_HITHALF_F=Math.max(0.3,((bMaxX-bMinX)*k3*0.5)/120);
+DEMON_HEAD_F=DEMON_HITTOP_F*0.80;}
 }catch(e){DEMON_CROP=null;}
 demonReady=!!DEMON_CROP&&DEMON_ANIMS.idle.frames.length>0&&DEMON_ANIMS.walk.frames.length>0;}
 function loadDemonSeq(folder,prefix,arr){
@@ -1833,10 +1721,100 @@ g.clearRect(0,0,g.canvas.width,g.canvas.height);
 const seq=DEMON_ANIMS[z.anim?z.anim.name:'idle'];
 const fr=seq&&seq.frames.length?seq.frames[Math.min(z.anim.frame,seq.frames.length-1)]:null;
 if(fr&&DEMON_CROP){const C=DEMON_CROP,dir=z.pose.dir||1;
-const H=36*BOSS_RES,k=H/C.h,w=C.w*k;
+const h=DEMON_DRAW_H,w=DEMON_DRAW_W;
 g.save();g.translate(CX*BOSS_RES,FEET*BOSS_RES);g.scale(-dir,1);
 g.imageSmoothingEnabled=false;
-g.drawImage(fr,C.x,C.y,C.w,C.h,-w/2,-H,w,H);
+g.drawImage(fr,C.x,C.y,C.w,C.h,-w/2,-h,w,h);
+g.restore();}
+z.tex.needsUpdate=true;}
+/* ============ JEFE DRAGON LORD: spritesheets recortadas (assets/dragonlord) ============ */
+const DRAGON_BASE='assets/dragonlord/Spritesheets/';
+const DRAGON_FACE=1; // el sprite nativo del dragon lord mira a la derecha
+const DRAGON_ANIMS={
+idle:{fps:8,frames:[]},
+walk:{fps:12,frames:[]},
+cleave:{fps:14,frames:[]},
+take_hit:{fps:10,frames:[]},
+death:{fps:9,frames:[]}
+};
+let dragonReady=false,dragonPend=5;
+let DRAGON_CROP=null;
+let DRAGON_DRAW_H=240,DRAGON_DRAW_W=240;
+let DRAGON_HITTOP_F=2.0,DRAGON_HITHALF_F=0.5,DRAGON_HEAD_F=1.3;
+const DRAGON_UNIW=320,DRAGON_UNIH=220,DRAGON_AX=160,DRAGON_AY=210;
+function loadDragonSheet(file,fw,fh,arr){
+const im=new Image();
+im.onload=()=>{
+const cols=Math.max(1,Math.floor(im.naturalWidth/fw));
+const rows=Math.max(1,Math.floor(im.naturalHeight/fh));
+for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+const cv=document.createElement('canvas');cv.width=fw;cv.height=fh;
+const g=cv.getContext('2d');
+g.drawImage(im,c*fw,r*fh,fw,fh,0,0,fw,fh);
+let any=false;
+try{const d=g.getImageData(0,0,fw,fh).data;
+for(let i=3;i<d.length;i+=4){if(d[i]>8){any=true;break;}}}catch(e){any=true;}
+if(!any)continue;
+arr.push({cv:cv,fw:fw,fh:fh,dx:DRAGON_AX-fw/2,dy:DRAGON_AY-fh});
+}
+dragonSeqDone();
+};
+im.onerror=()=>{dragonSeqDone();};
+im.src=DRAGON_BASE+file;
+}
+function dragonSeqDone(){if(--dragonPend>0)return;
+try{
+let minX=1e9,minY=1e9,maxX=-1,maxY=-1;
+let bMinX=1e9,bMinY=1e9,bMaxX=-1,bMaxY=-1;
+const cv=document.createElement('canvas');cv.width=DRAGON_UNIW;cv.height=DRAGON_UNIH;
+const g=cv.getContext('2d',{willReadFrequently:true});
+for(const k in DRAGON_ANIMS)for(const fr of DRAGON_ANIMS[k].frames){
+g.clearRect(0,0,cv.width,cv.height);
+g.drawImage(fr.cv,0,0,fr.fw,fr.fh,fr.dx,fr.dy,fr.fw,fr.fh);
+const d=g.getImageData(0,0,cv.width,cv.height).data;
+let f0=1e9,f1=1e9,f2=-1,f3=-1;
+for(let y=0;y<cv.height;y++)for(let x=0;x<cv.width;x++){if(d[(y*cv.width+x)*4+3]>8){
+if(x<f0)f0=x;if(x>f2)f2=x;if(y<f1)f1=y;if(y>f3)f3=y;}}
+if(f2<0)continue;
+if(f0<minX)minX=f0;if(f2>maxX)maxX=f2;
+if(f1<minY)minY=f1;if(f3>maxY)maxY=f3;
+if(k==='idle'||k==='walk'){
+if(f0<bMinX)bMinX=f0;if(f2>bMaxX)bMaxX=f2;
+if(f1<bMinY)bMinY=f1;if(f3>bMaxY)bMaxY=f3;}}
+if(maxX>=0)DRAGON_CROP={x:minX,y:minY,w:maxX-minX+1,h:maxY-minY+1};
+if(DRAGON_CROP&&bMaxX>=0){
+const aspect=DRAGON_CROP.w/DRAGON_CROP.h;
+let dh=240,dw=dh*aspect;
+if(dw>284){dw=284;dh=dw/aspect;}
+DRAGON_DRAW_H=dh;DRAGON_DRAW_W=dw;
+const k3=dh/DRAGON_CROP.h;
+DRAGON_HITTOP_F=Math.max(1.0,(dh-(bMinY-DRAGON_CROP.y)*k3)/120);
+DRAGON_HITHALF_F=Math.max(0.22,((bMaxX-bMinX)*k3*0.5)/120*0.72);
+DRAGON_HEAD_F=DRAGON_HITTOP_F*0.80;}
+}catch(e){DRAGON_CROP=null;}
+dragonReady=!!DRAGON_CROP&&DRAGON_ANIMS.idle.frames.length>0&&DRAGON_ANIMS.walk.frames.length>0;}
+loadDragonSheet('dragon_lord_idle_basic_74x74.png',74,74,DRAGON_ANIMS.idle.frames);
+loadDragonSheet('dragon_lord_walk_basic_74x74.png',74,74,DRAGON_ANIMS.walk.frames);
+loadDragonSheet('dragon_lord_attack_arms_90x70.png',90,70,DRAGON_ANIMS.cleave.frames);
+loadDragonSheet('dragon_lord_hurt_basic_130x130.png',130,130,DRAGON_ANIMS.take_hit.frames);
+loadDragonSheet('dragon_lord_death_160x160.png',160,160,DRAGON_ANIMS.death.frames);
+function dragonSetAnim(z,name){if(!z.anim)z.anim={name:name,frame:0,t:0};
+if(z.anim.name!==name){z.anim.name=name;z.anim.frame=0;z.anim.t=0;}}
+function dragonTick(z,dt){const seq=DRAGON_ANIMS[z.anim.name];if(!seq||!seq.frames.length)return;
+z.anim.t+=dt;const fd=1/seq.fps;
+while(z.anim.t>=fd){z.anim.t-=fd;
+if(z.anim.name==='death'){if(z.anim.frame<seq.frames.length-1)z.anim.frame++;}
+else z.anim.frame=(z.anim.frame+1)%seq.frames.length;}}
+function drawDragon(z){const g=z.ctx;
+g.setTransform(1,0,0,1,0,0);
+g.clearRect(0,0,g.canvas.width,g.canvas.height);
+const seq=DRAGON_ANIMS[z.anim?z.anim.name:'idle'];
+const fr=seq&&seq.frames.length?seq.frames[Math.min(z.anim.frame,seq.frames.length-1)]:null;
+if(fr&&DRAGON_CROP){const C=DRAGON_CROP,dir=z.pose.dir||1;
+const h=DRAGON_DRAW_H,w=DRAGON_DRAW_W,k3=h/C.h;
+g.save();g.translate(CX*BOSS_RES,FEET*BOSS_RES);g.scale(DRAGON_FACE*dir,1);
+g.imageSmoothingEnabled=false;
+g.drawImage(fr.cv,0,0,fr.fw,fr.fh,(fr.dx-C.x)*k3-w/2,(fr.dy-C.y)*k3-h,fr.fw*k3,fr.fh*k3);
 g.restore();}
 z.tex.needsUpdate=true;}
 function buildZombie(res){
@@ -1894,164 +1872,69 @@ if(Math.abs(x-P.x)<40)sfx('moan');
 }
 /* ---- SPAWN DE JEFE: cada 2 oleadas, mucha vida, arma aleatoria ---- */
 let bossSpawnedThisWave=false;
+let bossAlt=false;
 function spawnBoss(){
+if(!demonReady&&!dragonReady)return false;
+let type;
+if(demonReady&&dragonReady){bossAlt=!bossAlt;type=bossAlt?'dragon':'demon';}
+else type=demonReady?'demon':'dragon';
 const side=Math.random()<.5?-1:1;
 const x=side*(WORLD_LIMIT-1.5);
 const z=buildZombie(SC*BOSS_RES);
-const type=pick(BOSS_TYPES);
-z.isBoss=true; z.bossType=type.id;
-z.name=pick(type.names);
-z.torsoImg=hiDef(type.torso,type.pal,BOSS_RES);
-z.torsoPiv=type.piv;
-z.wings=!!type.wings;
-z.laser=!!type.laser;
-z.laserCd=R(2,4);
-z.ab=null;z.abCd=R(2.5,5);z.airY=0;z.healUsed=0;z.abPose=null;
-z.weapon=null;
-const colors=makeZombieColors();
-z.colors=Object.assign({},type.pal,{skin2:type.pal.h||type.pal.skin,skin:type.pal.H||type.pal.M,blood:'#5a0d10'});
-z.colors.glow=type.pal.E||'#7ff5ea';
-z.colors.glowD=shade(type.pal.E||'#7ff5ea',-80);
-const scale=(type.id==='demon')?R(2.0,2.4):R(2.2,2.7);
-z.sx=scale; z.sy=scale;
-z.dmg=type.dmg;
-z.hp=(140+wave*20)*type.hpMul; z.maxhp=z.hp;
-z.speed=type.speed;
+z.isBoss=true;z.bossType=type;
+z.torsoImg=null;z.wings=false;z.laser=false;
+z.ab=null;z.airY=0;z.healUsed=0;
+z.colors=makeZombieColors();
+z.anim={name:'idle',frame:0,t:0};
+if(type==='demon'){
+z.name=pick(['AZAZEL, EL ALADO','BELIAL, LANGUA DE FUEGO','EL DEMONIO ROJO']);
+const scale=R(4.5,5.2);
+z.sx=scale;z.sy=scale;
+z.hitTop=DEMON_HITTOP_F*scale;
+z.hitHalf=DEMON_HITHALF_F*scale;
+z.dmg=30;
+z.hp=(140+wave*20)*80;z.maxhp=z.hp;
+z.speed=1.1;
+z.reach=1.5*scale;
+}else{
+z.name=pick(['VHRAKOTH, SEÑOR DRAGÓN','KARZAG, FUEGO ANTIGUO','EL DRAGON LORD']);
+const scale=R(5.6,6.4);
+z.sx=scale;z.sy=scale;
+z.hitTop=DRAGON_HITTOP_F*scale;
+z.hitHalf=DRAGON_HITHALF_F*scale;
+z.dmg=12; // daño POR CADA FRAME de golpe
+z.hp=(140+wave*20)*55;z.maxhp=z.hp;
+z.speed=3.4;
+z.reach=0.7*scale+0.8;
+}
 z.meshBaseY=MESH_CENTER_Y*z.sy;
 z.hpbarBaseY=2.15*z.sy;
 z.mesh.scale.set(z.sx,z.sy,1);
 z.blob.scale.set(z.sx,1,1);
 z.ph=R(0,9);
-z.anim=(type.id==='demon')?{name:'idle',frame:0,t:0}:null;
 z.stagger=0;z.atkCd=R(0,.5);z.windup=0;z.dead=false;z.fallT=0;
 z.mesh.position.set(x,z.meshBaseY,0.1);
 z.blob.position.set(x,0.02,0);
 z.hpbar.visible=false;
 zombies.push(z);
-spawnFlash(x); sfx('bossroar'); bossMusicStart();
+spawnFlash(x);sfx('bossroar');bossMusicStart();
 showBanner('JEFE · '+z.name,'¡PREPÁRATE PARA EL COMBATE!');
 bossHud.classList.add('show');
 bossName.textContent=z.name;
-bossAb.textContent='JEFE · '+type.id.toUpperCase();
+bossAb.textContent=type==='demon'?'JEFE · DEMONIO DEL ABISMO':'JEFE · SEÑOR DRAGÓN';
+return true;
 }
-/* ============ HABILIDADES DE JEFE: dash, orbe, slam, cura, bola de fuego ============ */
-const bossShots=[];
-for(let i=0;i<10;i++){
-const g=new THREE.Group();
-const core=new THREE.Sprite(new THREE.SpriteMaterial({map:texGlow,color:0xffffff,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));
-const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:texGlow,color:0xffffff,transparent:true,opacity:.55,blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));
-g.add(halo);g.add(core);g.visible=false;g.renderOrder=9;scene.add(g);
-bossShots.push({g,core,halo,active:false,kind:'none',x:0,y:0,vx:0,vy:0,life:0,dmg:0,base:.7});
-}
-function fireBossShot(kind,x,y,dir,dmg){
-for(const s of bossShots){if(s.active)continue;
-s.active=true;s.g.visible=true;s.kind=kind;s.x=x;s.y=y;s.life=7;s.dmg=dmg;
-s.vx=dir*(kind==='fire'?7.5:4.2);s.vy=kind==='fire'?2.0:0;s.base=kind==='fire'?.8:.7;
-s.core.material.color.setHex(kind==='fire'?0xffe0b0:0xeaccff);
-s.halo.material.color.setHex(kind==='fire'?0xff6a1a:0x9a2aff);
-s.g.position.set(x,y,.3);return s;}
-return null;}
-function updateBossShots(dt,t){
-for(const s of bossShots){if(!s.active)continue;
-s.life-=dt;
-if(s.kind==='fire')s.vy-=6.5*dt;
-s.x+=s.vx*dt;s.y+=s.vy*dt;
-if(!P.dead&&Math.abs(s.x-P.x)<0.7&&s.y>P.y+0.1&&s.y<P.y+1.7){
-hurtPlayer(s.dmg);blood(_v1.set(P.x,P.y+1.2,.2),5);sfx('hurt');
-s.active=false;s.g.visible=false;continue;}
-if(s.y<=0.15||Math.abs(s.x)>WORLD_LIMIT||s.life<=0){
-if(s.kind==='fire'){spark(s.x,Math.max(s.y,.3),8);dust(s.x,0,4);shake=Math.min(shake+.2,1);sfx('gboom');}
-else{spark(s.x,Math.max(s.y,.3),5);sfx('ric');}
-s.active=false;s.g.visible=false;continue;}
-s.g.position.set(s.x,s.y,.3);
-const pul=1+Math.sin(t*16+s.x*3)*.18;
-s.core.scale.set(s.base*pul,s.base*pul,1);
-s.halo.scale.set(s.base*2.3*pul,s.base*2.3*pul,1);}
-if(slamMark.visible){const s2=1+Math.sin(t*10)*.15;slamMark.scale.set(s2,s2,1);
-slamMark.material.opacity=.6+Math.sin(t*14)*.25;}
-}
-const slamMark=new THREE.Mesh(new THREE.RingGeometry(0.5,0.75,32),
-new THREE.MeshBasicMaterial({color:0xff3040,transparent:true,opacity:.85,side:THREE.DoubleSide,
-blending:THREE.AdditiveBlending,depthWrite:false,fog:false,toneMapped:false}));
-slamMark.rotation.x=-Math.PI/2;slamMark.visible=false;slamMark.renderOrder=12;scene.add(slamMark);
-const healAura=new THREE.Sprite(new THREE.SpriteMaterial({map:texGlow,color:0x3aff6a,transparent:true,
-opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));
-healAura.visible=false;healAura.renderOrder=9;scene.add(healAura);
-function bossPickAbility(z,dist){
-const opts=['orb','fire','orb','fire'];
-if(dist>4&&dist<16)opts.push('dash','dash','dash');
-if(dist<12)opts.push('slam','slam');
-if(z.hp<z.maxhp*.75&&(z.healUsed||0)<2&&Math.random()<.15)opts.push('heal');
-return pick(opts);}
-function startBossAbility(z,type){
-z.ab={type:type,phase:'start',t:0};
-if(type==='dash'){z.ab.phase='wind';z.ab.t=.45;sfx('zatk');}
-else if(type==='orb'){z.ab.phase='aim';z.ab.t=.7;sfx('laser');}
-else if(type==='fire'){z.ab.phase='aim';z.ab.t=.6;sfx('gthrow');}
-else if(type==='slam'){z.ab.phase='crouch';z.ab.t=.55;sfx('zatk');}
-else if(type==='heal'){z.ab.t=3;sfx('bell');}}
-function updateBossAbility(z,dt,t){
-if(!z.ab){z.abCd-=dt;
-if(z.abCd<=0&&!P.dead&&z.stagger<=0)startBossAbility(z,bossPickAbility(z,Math.abs(P.x-z.x)));
-else return false;}
-const ab=z.ab,dir=P.x>z.x?1:-1;
-if(ab.type==='dash'){
-if(ab.phase==='wind'){ab.t-=dt;
-z.abPose={lean:-.25,armF:.9,armB:-.3,thighF:.5,thighB:.3,kneeF:.9,kneeB:.5,bob:.4};
-if(ab.t<=0){ab.phase='run';ab.t=.55;ab.dir=dir;sfx('gate');}
-return true;}
-ab.t-=dt;z.x=clamp(z.x+ab.dir*20*dt,-ZOMBIE_LIMIT,ZOMBIE_LIMIT);
-if(Math.random()<.5)dust(z.x-ab.dir*.6,0,1);
-z.abPose={lean:.55,armF:1.0,armB:-.5,thighF:-.7,thighB:-.9,kneeF:.3,kneeB:.4,bob:.2};
-if(!P.dead&&Math.abs(P.x-z.x)<1.4*z.sy&&P.y<1.4){hurtPlayer(Math.round(z.dmg*1.2));sfx('hit');ab.t=Math.min(ab.t,.05);}
-if(ab.t<=0){z.ab=null;z.abCd=R(4,7);}
-return true;}
-if(ab.type==='orb'||ab.type==='fire'){
-ab.t-=dt;
-z.abPose={lean:.05,armF:1.25,armB:-.2,thighF:.1,thighB:-.1,kneeF:0,kneeB:0,bob:0};
-if(ab.t<=0){fireBossShot(ab.type,z.x+dir*.9,1.3,dir,ab.type==='fire'?Math.round(z.dmg*1.1):z.dmg);
-z.ab=null;z.abCd=R(3.5,6);}
-return true;}
-if(ab.type==='slam'){
-if(ab.phase==='crouch'){ab.t-=dt;
-z.abPose={lean:.5,armF:-.4,armB:-.4,thighF:.9,thighB:.7,kneeF:1.3,kneeB:1.1,bob:.6};
-if(ab.t<=0){ab.phase='air';ab.t=.95;ab.max=.95;ab.fromX=z.x;
-ab.tx=clamp(P.x,-PLAYER_LIMIT,PLAYER_LIMIT);
-slamMark.visible=true;slamMark.position.set(ab.tx,0.06,0.2);sfx('spawn');}
-return true;}
-if(ab.phase==='air'){ab.t-=dt;const k=1-ab.t/ab.max;
-z.x=ab.fromX+(ab.tx-ab.fromX)*k;
-z.airY=Math.sin(Math.min(1,k)*Math.PI)*(5+z.sy);
-z.abPose={lean:.2,armF:1.4,armB:1.2,thighF:-.9,thighB:-.7,kneeF:1.2,kneeB:1.0,bob:0};
-if(ab.t<=0){ab.phase='land';ab.t=.4;z.airY=0;slamMark.visible=false;
-shake=Math.min(shake+.8,1);sfx('gboom');dust(z.x,0,10);spark(z.x,1.2,8);
-for(const w of boomWaves){if(w.life<=0){w.m.visible=true;w.m.position.set(z.x,0.1,0.25);w.m.scale.set(1,1,1);w.life=w.max=.6;break;}}
-if(!P.dead&&Math.abs(P.x-z.x)<2.4&&P.y<1.3)hurtPlayer(Math.round(z.dmg*1.5));}
-return true;}
-ab.t-=dt;
-z.abPose={lean:.6,armF:.2,armB:.2,thighF:1.0,thighB:.8,kneeF:1.4,kneeB:1.2,bob:.5};
-if(ab.t<=0){z.ab=null;z.abCd=R(4.5,7.5);}
-return true;}
-if(ab.type==='heal'){ab.t-=dt;
-z.hp=Math.min(z.maxhp,z.hp+z.maxhp*.06*dt);
-healAura.visible=true;healAura.position.set(z.x,1.1*z.sy,.25);
-const sc=z.sy*(2.3+Math.sin(t*9)*.35);healAura.scale.set(sc,sc*1.25,1);
-healAura.material.opacity=.45+Math.sin(t*13)*.18;
-z.abPose={lean:0,armF:.35,armB:.35,thighF:0,thighB:0,kneeF:0,kneeB:0,bob:Math.sin(t*6)*.15};
-if(ab.t<=0){z.ab=null;z.abCd=R(9,14);z.healUsed=(z.healUsed||0)+1;healAura.visible=false;}
-return true;}
-z.ab=null;return false;}
 function killZombie(z){
 z.dead=true;z.fallT=0;z.hpbar.visible=false;kills++;killNum.textContent=kills;
-if(z.isBoss)bossMusicStop();
-if(z.isBoss){healAura.visible=false;slamMark.visible=false;
-for(const s of bossShots){s.active=false;s.g.visible=false;}}
+if(z.isBoss){bossMusicStop();
+if(z.bossType==='demon')playDemonDeath();
+else if(z.bossType==='dragon')playDragonDeath();}
 const reward=z.isBoss?200:z.cls.cash;
 money += reward; setMoney(); floatNum(z.x,1.7,'+'+reward,'#f0d089');
 const d=new THREE.Mesh(decalGeo,bas(0x240607,{transparent:true,opacity:.8}));
 d.rotation.x=-Math.PI/2;d.position.set(z.x,.013,R(-.3,.3));d.scale.setScalar(R(.5,.9));
 scene.add(d);decals.push(d);if(decals.length>40)scene.remove(decals.shift());
-sfx('zdie');
+if(!(z.isBoss&&z.bossType==='demon'))sfx('zdie');
 }
 const GRENADE_CD=20;
 const GRENADE_FUSE=1.5;
@@ -2278,6 +2161,24 @@ let spasPoolIdx=0;
 function playSpasSfx(){if(!spasPool.length||!spasFileOk)return false;
 const a=spasPool[spasPoolIdx++%spasPool.length];a.currentTime=0;a.play().catch(()=>{});return true;}
 //FIN DISPARO SPAS
+//PISADAS DEL DEMONIO
+const stepPool=[];for(let i=0;i<4;i++){const a=new Audio('assets/bossdemon/pisada.mp3');a.preload='auto';stepPool.push(a);}
+let stepPoolIdx=0;
+function playDemonStep(vol){if(!stepPool.length)return;
+const a=stepPool[stepPoolIdx++%stepPool.length];a.currentTime=0;a.volume=vol;a.play().catch(()=>{});}
+//FIN PISADAS
+//GRITO DE MUERTE DEL DEMONIO
+const deathPool=[];for(let i=0;i<3;i++){const a=new Audio('assets/bossdemon/muerte.mp3');a.preload='auto';a.volume=0.5;deathPool.push(a);}
+let deathPoolIdx=0;
+function playDemonDeath(){if(!deathPool.length)return;
+const a=deathPool[deathPoolIdx++%deathPool.length];a.currentTime=0;a.play().catch(()=>{});}
+//FIN GRITO MUERTE
+//GRITO DE MUERTE DEL DRAGONLORD
+const dragonDeathPool=[];for(let i=0;i<3;i++){const a=new Audio('assets/dragonlord/muerte.mp3');a.preload='auto';a.volume=0.6;dragonDeathPool.push(a);}
+let dragonDeathPoolIdx=0;
+function playDragonDeath(){if(!dragonDeathPool.length)return;
+const a=dragonDeathPool[dragonDeathPoolIdx++%dragonDeathPool.length];a.currentTime=0;a.play().catch(()=>{});}
+//FIN GRITO MUERTE DRAGONlord
 function initAudio(){if(AC)return;AC=new(window.AudioContext||window.webkitAudioContext)();
 master=AC.createGain();master.gain.value=.4;master.connect(AC.destination);
 noiseBuf=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);
@@ -2335,7 +2236,7 @@ o.connect(g);g.connect(master);o.start(t);o.stop(t+dc+.1);}}}
 const chatEl=document.getElementById('chat'),chatInput=document.getElementById('chat-input');
 let chatOpen=false;
 const CHEATS={
-HESOYAM:()=>{money+=1000;setMoney();sfx('buy');floatNum(P.x,2.2,'+1000','#f0d089');showBanner('TRUCO · HESOYAM','+1000 BOTÍN');}
+HESOYAM:()=>{money+=10000;setMoney();sfx('buy');floatNum(P.x,2.2,'+10000','#f0d089');showBanner('TRUCO · HESOYAM','+10000 BOTÍN');}
 };
 function applyCheat(code){const f=CHEATS[code];if(!f)return false;f();return true;}
 function openChat(){chatOpen=true;chatEl.classList.add('show');chatInput.value='';
@@ -2501,13 +2402,11 @@ dead:false,deadT:0,wasAir:false,aimAng:0});
 P.mouthWorld.set(0.5,1.4,0.3);flashT=0;thudCd=0;
 kills=0;killNum.textContent='0';wave=1;state='intermission';interT=2.4;bossSpawnedThisWave=false;
 bossMusicStop();
-healAura.visible=false;slamMark.visible=false;
-for(const s of bossShots){s.active=false;s.g.visible=false;}
 bossHud.classList.remove('show');
 goEl.classList.remove('show');resetProgress();setMoney();setAmmo();setHP();
 showBanner('OLEADA 1','LOS MUERTOS SE ACERCAN');waveHud.textContent='OLEADA 1';sfx('bell');}
 function segHit2D(ox,oy,dx,dy,maxT,z){
-const rx0=z.x-.4,rx1=z.x+.4,ry0=0,ry1=z.hitTop||(z.isBoss?2.0*z.sy:2.0);
+const hw=z.hitHalf||0.4;const rx0=z.x-hw,rx1=z.x+hw,ry0=0,ry1=z.hitTop||(z.isBoss?2.0*z.sy:2.0);
 let tmin=0,tmax=maxT;
 if(Math.abs(dx)<1e-6){ if(ox<rx0||ox>rx1)return -1; }
 else { let t1=(rx0-ox)/dx,t2=(rx1-ox)/dx; if(t1>t2){const q=t1;t1=t2;t2=q;}
@@ -2541,7 +2440,9 @@ const hitWall=txmax<=tymax, hitFloor=(!hitWall&&endY<=0.06);
 let bestT=-1,bestZ=null;
 for(const z of zombies){if(z.dead)continue;const tt=segHit2D(ox,oy,dx,dy,tExit,z);
 if(tt>=0&&(bestT<0||tt<bestT)){bestT=tt;bestZ=z;}}
-if(bestZ){const hx=ox+dx*bestT, hy=oy+dy*bestT;const head=hy>(bestZ.isBoss?1.45*bestZ.sy:1.45);
+if(bestZ){const hx=ox+dx*bestT, hy=oy+dy*bestT;
+const headY=!bestZ.isBoss?1.45:(bestZ.bossType==='demon'?DEMON_HEAD_F*bestZ.sy:(bestZ.bossType==='dragon'?DRAGON_HEAD_F*bestZ.sy:1.45*bestZ.sy));
+const head=hy>headY;
 const dmg=(head?w.head:w.body)*dmgMul;bestZ.hp-=dmg;if(!bestZ.isBoss)bestZ.stagger=.18;
 blood(_v1.set(hx,hy,.2),5);spawnImpact(hx,hy);sfx('hit');
 if(bestZ.hp<=0)killZombie(bestZ);
@@ -2561,6 +2462,9 @@ if(P.reloadKey!==null||w.ammo===w.mag)return;
 P.reloadKey=curWeapon;P.reloadT=w.reload;sfx('reload');setAmmo();}
 function hurtPlayer(dmg){if(P.invuln>0||P.dead)return;
 P.hp-=dmg;P.invuln=.7;shake=Math.min(shake+.5,1);hurtFlash();sfx('hurt');setHP();
+if(P.hp<=0){P.dead=true;P.deadT=0;mouse.down=false;bossMusicStop();}}
+function hurtPlayerRaw(dmg){if(P.dead)return;
+P.hp-=dmg;shake=Math.min(shake+.3,1);hurtFlash();sfx('hurt');setHP();
 if(P.hp<=0){P.dead=true;P.deadT=0;mouse.down=false;bossMusicStop();}}
 function update(dt,t){
 const playing=(state==='combat'||state==='intermission');
@@ -2642,7 +2546,6 @@ updateZaps(dt);
 updateImpacts(dt);
 updateSpawnFlashes(dt);
 updateGrenade(dt);
-updateBossShots(dt,t);
 updateBoomWaves(dt);
 updateSkyFx(dt,t);
 flashLightSpot.position.set(P.x+P.facing*.3,1.7,3.5);
@@ -2653,7 +2556,7 @@ if(state==='intermission'){interT-=dt;
 if(interT<=0){state='combat';toSpawn=3+wave*2;spawnGap=Math.max(.5,1.4-wave*.08);spawnT=.6;}}
 if(state==='combat'){
 if(toSpawn>0){spawnT-=dt;if(spawnT<=0){spawnZombie();toSpawn--;spawnT=spawnGap;}}
-else if(zombies.every(z=>z.dead)){
+else if(zombies.every(z=>z.dead)&&!zombies.some(z=>z.isBoss&&!z._deathDone&&((z.bossType==='demon'&&demonReady)||(z.bossType==='dragon'&&dragonReady)))){
 if(!bossSpawnedThisWave && (wave%2===0)){ bossSpawnedThisWave=true; spawnBoss(); }
 else { bossSpawnedThisWave=false; wave++;money+=15;setMoney();
 P.hp=Math.min(maxHp,P.hp+10);setHP();
@@ -2663,25 +2566,6 @@ const bz=zombies.find(z=>z.isBoss&&!z.dead);
 if(bz){bossHud.classList.add('show');bossName.textContent=bz.name;
 bossAb.textContent='JEFE · '+bz.bossType.toUpperCase();
 bossFill.style.width=clamp(bz.hp/bz.maxhp*100,0,100)+'%';
-if(bz.laser){
-const ldir=Math.sign(P.x-bz.x)||1;
-if(!bz.laserState)bz.laserState='idle';
-if(bz.laserState==='idle'){bz.laserCd-=dt;
-laserAim.visible=false;laserBeam.visible=false;laserCore.visible=false;
-if(bz.laserCd<=0&&!P.dead&&!bz.ab){bz.laserState='aim';bz.laserT=0.9;
-bz.laserY=Math.random()<.5?0.9:2.2;sfx('laser');}}
-else if(bz.laserState==='aim'){bz.laserT-=dt;
-setLaserVis(laserAim,bz.x,ldir,bz.laserY);
-laserAimMat.opacity=.25+Math.abs(Math.sin(t*20))*.5;
-laserBeam.visible=false;laserCore.visible=false;
-if(bz.laserT<=0){bz.laserState='fire';bz.laserT=.22;
-setLaserVis(laserBeam,bz.x,ldir,bz.laserY);setLaserVis(laserCore,bz.x,ldir,bz.laserY);
-shake=Math.min(shake+.3,1);sfx('snip');
-if(!P.dead&&bz.laserY>P.y+0.15&&bz.laserY<P.y+1.65)hurtPlayer(bz.dmg);}}
-else if(bz.laserState==='fire'){bz.laserT-=dt;
-setLaserVis(laserBeam,bz.x,ldir,bz.laserY);setLaserVis(laserCore,bz.x,ldir,bz.laserY);
-if(bz.laserT<=0){bz.laserState='idle';bz.laserCd=R(3,5);
-laserBeam.visible=false;laserCore.visible=false;}}}
 }else{bossHud.classList.remove('show');}
 for(let i=zombies.length-1;i>=0;i--){const z=zombies[i];
 if(!z.dead){
@@ -2689,16 +2573,10 @@ const dir=P.x>z.x?1:-1; z.dir=dir;
 z.stagger-=dt; z.atkCd-=dt;
 const dist=Math.abs(P.x-z.x);
 let thighF,thighB,kneeF,kneeB,lean,armF,armB,bob;
-let busy=false;
-if(z.isBoss)busy=updateBossAbility(z,dt,t);
-if(busy){const ap=z.abPose;
-thighF=ap.thighF;thighB=ap.thighB;kneeF=ap.kneeF;kneeB=ap.kneeB;
-lean=ap.lean;armF=ap.armF;armB=ap.armB;bob=ap.bob;
-}else if(z.isBoss){
+if(z.isBoss){
 /* ---- MARCHA SOLEMNE: torso erguido, brazos caídos, paso medido ---- */
 if(dist>1.05||z.atkCd>0){
-if(z.stagger<=0&&!(z.windup>0)&&!(z.laser&&z.laserState&&z.laserState!=='idle')) z.x=clamp(z.x+dir*z.speed*dt,-ZOMBIE_LIMIT,ZOMBIE_LIMIT);
-z.ph+=dt*z.speed*2.1;
+if(z.stagger<=0&&!(z.windup>0)) z.x=clamp(z.x+dir*z.speed*dt,-ZOMBIE_LIMIT,ZOMBIE_LIMIT); z.ph+=dt*z.speed*2.1;
 const s=Math.sin(z.ph);
 thighF=s*.30; thighB=-s*.30;
 kneeF=Math.max(0,-s)*.45; kneeB=Math.max(0,s)*.45;
@@ -2710,10 +2588,11 @@ bob=-.5*Math.abs(s);
 thighF=.05;thighB=-.05;kneeF=0;kneeB=0;lean=.03;
 armF=-.75;armB=-.85;bob=Math.sin(t*1.8)*.12;
 }
-if(dist<=1.05*z.sy && z.atkCd<=0 && z.windup<=0 && z.stagger<=0){ z.windup=(z.bossType==='demon')?0.55:0.30; if(Math.random()<.6)sfx('zatk'); }
+const reachX=z.reach||1.05*z.sy;
+if(dist<=reachX && z.atkCd<=0 && z.windup<=0 && z.stagger<=0){ z.windup=(z.bossType==='demon')?0.75:(z.bossType==='dragon')?0.45:0.30; if(Math.random()<.6)sfx('zatk'); }
 if(z.windup>0){ z.windup-=dt; armF=1.35; armB=-1.2; lean=.18;
 if(z.windup<=0){ z.atkCd=0.8;
-if(Math.abs(P.x-z.x)<1.5*z.sy && P.y<BITE_REACH_Y*z.sy) hurtPlayer(z.dmg); } }
+if(z.bossType!=='dragon'&&Math.abs(P.x-z.x)<(z.reach||1.5*z.sy) && P.y<BITE_REACH_Y*z.sy) hurtPlayer(z.dmg); } }
 if(z.stagger>0){ lean+=.10; bob+=.3; }
 }else{
 if(dist>1.05||z.atkCd>0){
@@ -2754,11 +2633,49 @@ if(z.stagger>0){ lean+=.16; bob+=.4; }
 }
 z.pose={dir,thighF,thighB,kneeF,kneeB,lean,armF,armB,bob,dead:null};
 if(z.isBoss&&z.bossType==='demon'&&demonReady){
+const cseq=DEMON_ANIMS.cleave;
+const cleavePlaying=z.anim&&z.anim.name==='cleave'&&z.anim.frame<cseq.frames.length-1;
+if(!cleavePlaying){
 if(z.windup>0)demonSetAnim(z,'cleave');
 else if(z.stagger>0)demonSetAnim(z,'take_hit');
 else if(dist>1.05||z.atkCd>0)demonSetAnim(z,'walk');
 else demonSetAnim(z,'idle');
+const pf=z.anim?z.anim.frame:0;
+demonTick(z,dt);
+const nf=z.anim?z.anim.frame:0;
+if(z.anim.name==='walk'&&nf!==pf){
+const half=DEMON_ANIMS.walk.frames.length>>1;
+if((pf<half&&nf>=half)||nf<pf)playDemonStep(clamp(1-dist/45,.12,.6));
+}
+drawDemon(z);
+}
 demonTick(z,dt);drawDemon(z);
+}else if(z.isBoss&&z.bossType==='dragon'&&dragonReady){
+const cseq=DRAGON_ANIMS.cleave;
+const cleavePlaying=z.anim&&z.anim.name==='cleave'&&z.anim.frame<cseq.frames.length-1;
+if(!cleavePlaying){
+if(z.windup>0)dragonSetAnim(z,'cleave');
+else if(z.stagger>0)dragonSetAnim(z,'take_hit');
+else if(dist>1.05||z.atkCd>0)dragonSetAnim(z,'walk');
+else dragonSetAnim(z,'idle');
+}
+const pf=z.anim?z.anim.frame:0;
+dragonTick(z,dt);
+const nf=z.anim?z.anim.frame:0;
+if(nf!==pf){
+if(z.anim.name==='cleave'){
+/* CADA FRAME DE GOLPE = UN GOLPE AL JUGADOR */
+const adv=nf>pf?nf-pf:(cseq.frames.length-pf)+nf;
+if(Math.abs(P.x-z.x)<(z.reach||2.5)&&P.y<BITE_REACH_Y){
+for(let k=0;k<adv;k++)hurtPlayerRaw(z.dmg);
+blood(_v1.set(P.x,P.y+1.1,.3),4);
+}
+}else if(z.anim.name==='walk'){
+const half=DRAGON_ANIMS.walk.frames.length>>1;
+if((pf<half&&nf>=half)||nf<pf){dust(z.x-dir*.4,0,3);shake=Math.min(shake+.03,1);sfx('bosstep');}
+}
+}
+drawDragon(z);
 }else drawZombie(z);
 z.mesh.position.x=z.x;
 z.mesh.position.y=z.meshBaseY+(z.airY||0);
@@ -2776,13 +2693,21 @@ const fade=z.fallT>.5?Math.max(0,1-(z.fallT-.5)/1.2):1;
 if(z.isBoss&&z.bossType==='demon'&&demonReady){
 demonSetAnim(z,'death');demonTick(z,dt);drawDemon(z);
 z.blobMat.opacity=.3*fade;
+const dseq=DEMON_ANIMS.death;
+if(dseq.frames.length&&z.anim.frame>=dseq.frames.length-1)z._deathDone=true;
+}else if(z.isBoss&&z.bossType==='dragon'&&dragonReady){
+dragonSetAnim(z,'death');dragonTick(z,dt);drawDragon(z);
+z.blobMat.opacity=.3*fade;
+const dq=DRAGON_ANIMS.death;
+if(dq.frames.length&&z.anim.frame>=dq.frames.length-1)z._deathDone=true;
 }else{
 z.pose={dir:z.dir,thighF:0,thighB:0,kneeF:0,kneeB:0,lean:0,armF:0,armB:0,bob:0,
 dead:{rot:fall*1.3,sink:sinkPx,fade}};
 drawZombie(z);
 z.mat.opacity=fade; z.blobMat.opacity=.3*fade;
 }
-if(z.fallT>2.0){ scene.remove(z.mesh); scene.remove(z.blob); scene.remove(z.hpbar); zombies.splice(i,1); }
+const zDone=(z.isBoss&&z.bossType==='demon'&&demonReady)?(z._deathDone&&z.fallT>2.6):(z.fallT>2.0);
+if(zDone){ scene.remove(z.mesh); scene.remove(z.blob); scene.remove(z.hpbar); zombies.splice(i,1); }
 }}
 for(const c of casings){if(!c.m.visible)continue;c.life-=dt;
 if(c.life<=0){c.m.visible=false;continue;}
