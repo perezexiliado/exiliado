@@ -1681,7 +1681,7 @@ if(x<f0)f0=x;if(x>f2)f2=x;if(y<f1)f1=y;if(y>f3)f3=y;}}
 if(f2<0)continue;
 if(f0<minX)minX=f0;if(f2>maxX)maxX=f2;
 if(f1<minY)minY=f1;if(f3>maxY)maxY=f3;
-if(k==='idle'||k==='walk'||k==='take_hit'){
+if(k==='idle'){
 if(f0<bMinX)bMinX=f0;if(f2>bMaxX)bMaxX=f2;
 if(f1<bMinY)bMinY=f1;if(f3>bMaxY)bMaxY=f3;}}
 if(maxX>=0)DEMON_CROP={x:minX,y:minY,w:maxX-minX+1,h:maxY-minY+1};
@@ -1691,8 +1691,8 @@ let dh=240,dw=dh*aspect;
 if(dw>284){dw=284;dh=dw/aspect;}
 DEMON_DRAW_H=dh;DEMON_DRAW_W=dw;
 const k3=dh/DEMON_CROP.h;
-DEMON_HITTOP_F=Math.max(1.0,(dh-(bMinY-DEMON_CROP.y)*k3)/120);
-DEMON_HITHALF_F=Math.max(0.3,((bMaxX-bMinX)*k3*0.5)/120);
+DEMON_HITTOP_F=(dh-(bMinY-DEMON_CROP.y)*k3)/120*0.92;
+DEMON_HITHALF_F=((bMaxX-bMinX)*k3*0.5)/120*0.5;
 DEMON_HEAD_F=DEMON_HITTOP_F*0.80;}
 }catch(e){DEMON_CROP=null;}
 demonReady=!!DEMON_CROP&&DEMON_ANIMS.idle.frames.length>0&&DEMON_ANIMS.walk.frames.length>0;}
@@ -1778,6 +1778,8 @@ if(x<f0)f0=x;if(x>f2)f2=x;if(y<f1)f1=y;if(y>f3)f3=y;}}
 if(f2<0)continue;
 if(f0<minX)minX=f0;if(f2>maxX)maxX=f2;
 if(f1<minY)minY=f1;if(f3>maxY)maxY=f3;
+/* El cuerpo (y la coronilla) se mide SOLO con idle/walk:
+   el sheet de hurt tiene efectos que suben por encima de la cabeza */
 if(k==='idle'||k==='walk'){
 if(f0<bMinX)bMinX=f0;if(f2>bMaxX)bMaxX=f2;
 if(f1<bMinY)bMinY=f1;if(f3>bMaxY)bMaxY=f3;}}
@@ -1788,7 +1790,7 @@ let dh=240,dw=dh*aspect;
 if(dw>284){dw=284;dh=dw/aspect;}
 DRAGON_DRAW_H=dh;DRAGON_DRAW_W=dw;
 const k3=dh/DRAGON_CROP.h;
-DRAGON_HITTOP_F=Math.max(1.0,(dh-(bMinY-DRAGON_CROP.y)*k3)/120);
+DRAGON_HITTOP_F=Math.max(0.6,(dh-(bMinY-DRAGON_CROP.y)*k3)/120);
 DRAGON_HITHALF_F=Math.max(0.22,((bMaxX-bMinX)*k3*0.5)/120*0.72);
 DRAGON_HEAD_F=DRAGON_HITTOP_F*0.80;}
 }catch(e){DRAGON_CROP=null;}
@@ -1902,7 +1904,7 @@ const scale=R(5.6,6.4);
 z.sx=scale;z.sy=scale;
 z.hitTop=DRAGON_HITTOP_F*scale;
 z.hitHalf=DRAGON_HITHALF_F*scale;
-z.dmg=12; // daño POR CADA FRAME de golpe
+z.dmg=2; // daño POR CADA FRAME de golpe
 z.hp=(140+wave*20)*55;z.maxhp=z.hp;
 z.speed=3.4;
 z.reach=0.7*scale+0.8;
@@ -2235,8 +2237,49 @@ o.connect(g);g.connect(master);o.start(t);o.stop(t+dc+.1);}}}
 /* ---- CHAT DE TRUCOS (T) ---- */
 const chatEl=document.getElementById('chat'),chatInput=document.getElementById('chat-input');
 let chatOpen=false;
+
+let cheatOneShot=false;
+let cheatGodLife=false;
+let cheatInfAmmo=false;
+
 const CHEATS={
-HESOYAM:()=>{money+=10000;setMoney();sfx('buy');floatNum(P.x,2.2,'+10000','#f0d089');showBanner('TRUCO · HESOYAM','+10000 BOTÍN');}
+  HESOYAM:()=>{
+    money+=10000;
+    setMoney();
+    sfx('buy');
+    floatNum(P.x,2.2,'+10000','#f0d089');
+    showBanner('TRUCO · HESOYAM','+10000 BOTÍN');
+  },
+
+  AEZAKMI:()=>{
+    cheatOneShot=!cheatOneShot;
+    sfx('buy');
+    const msg=cheatOneShot?'UN DISPARO: ACTIVADO':'UN DISPARO: DESACTIVADO';
+    floatNum(P.x,2.2,msg,cheatOneShot?'#c9272f':'#9a8f7c');
+    showBanner('TRUCO · AEZAKMI',msg);
+  },
+
+  FULLME:()=>{
+    cheatGodLife=!cheatGodLife;
+
+    if(cheatGodLife){
+      P.hp=maxHp;
+      setHP();
+    }
+
+    sfx('buy');
+    const msg=cheatGodLife?'VIDA INFINITA: ACTIVADA':'VIDA INFINITA: DESACTIVADA';
+    floatNum(P.x,2.2,msg,cheatGodLife?'#7ff5ea':'#9a8f7c');
+    showBanner('TRUCO · FULLME',msg);
+},
+NORECHARGE:()=>{
+cheatInfAmmo=!cheatInfAmmo;
+sfx('buy');
+const msg=cheatInfAmmo?'MUNICIÓN INFINITA: ACTIVADA':'MUNICIÓN INFINITA: DESACTIVADA';
+floatNum(P.x,2.2,msg,cheatInfAmmo?'#7ff5ea':'#9a8f7c');
+showBanner('TRUCO · NORECHARGE',msg);
+setAmmo();
+}
 };
 function applyCheat(code){const f=CHEATS[code];if(!f)return false;f();return true;}
 function openChat(){chatOpen=true;chatEl.classList.add('show');chatInput.value='';
@@ -2305,8 +2348,8 @@ document.body.classList.toggle('lowhp',P.hp<=maxHp*0.3&&state!=='title');
 }
 function setAmmo(){const w=weapons[curWeapon];
 const lblEl=document.querySelector('#ammo-panel .hlabel');if(lblEl)lblEl.textContent=w.label;
-ammoEl.innerHTML=w.ammo+' <span class="res">/ ∞</span>';
-ammoEl.classList.toggle('low', w.ammo<=Math.max(1,Math.round(w.mag*0.3)));
+ammoEl.innerHTML=(cheatInfAmmo?'∞':w.ammo)+' <span class="res">/ ∞</span>';
+ammoEl.classList.toggle('low', !cheatInfAmmo&&w.ammo<=Math.max(1,Math.round(w.mag*0.3)));
 const r=(P.reloadKey===curWeapon);
 reloadMsg.textContent=r?'RECARGANDO…':'';reloadMsg.classList.toggle('on',r);}
 function showBanner(t,s){bannerT.textContent=t;bannerS.textContent=s;
@@ -2377,9 +2420,28 @@ let state='title',wave=0,kills=0,toSpawn=0,spawnT=0,spawnGap=1.2,interT=0,shake=
 camX=0,camOff=0,camLY=1.3,pausedFrom='',flashT=0,thudCd=0;
 const SHOULDER_WORLD_Y=SHOULDER[1]*PX2;
 const MESH_CENTER_Y=(FEET-SC/2)*PX2;
-function resetProgress(){money=0;maxHp=100;dmgMul=1;speedMul=1;levels.hp=0;levels.dmg=0;levels.spd=0;
-ownedW.shot=false;ownedW.snip=false;ownedW.tac=false;curWeapon='m4';
-weapons.m4.ammo=weapons.m4.mag;weapons.shot.ammo=weapons.shot.mag;weapons.snip.ammo=weapons.snip.mag;weapons.tac.ammo=weapons.tac.mag;}
+function resetProgress(){
+  money=0;
+  maxHp=100;
+  dmgMul=1;
+  speedMul=1;
+  levels.hp=0;
+  levels.dmg=0;
+  levels.spd=0;
+  ownedW.shot=false;
+  ownedW.snip=false;
+  ownedW.tac=false;
+  curWeapon='m4';
+
+  cheatOneShot=false;
+  cheatGodLife=false;
+  cheatInfAmmo=false;
+
+  weapons.m4.ammo=weapons.m4.mag;
+  weapons.shot.ammo=weapons.shot.mag;
+  weapons.snip.ammo=weapons.snip.mag;
+  weapons.tac.ammo=weapons.tac.mag;
+}
 function startGame(){resetProgress();state='intermission';wave=1;interT=2.4;bossSpawnedThisWave=false;
 titleEl.classList.add('hidden');document.body.classList.remove('intitle');document.body.classList.add('playing');
 bgmStart();
@@ -2418,7 +2480,8 @@ return tmin;
 }
 function shoot(){
 const w=weapons[curWeapon];
-w.ammo--;setAmmo();P.recoil=1;P.fireCd=w.fireCd;
+if(!cheatInfAmmo){w.ammo--;setAmmo();}
+P.recoil=1;P.fireCd=w.fireCd;
 shake=Math.min(shake+(curWeapon==='snip'?.3:(curWeapon==='shot'||curWeapon==='tac')?.22:.12),1);
 sfx(curWeapon==='snip'?'snip':curWeapon==='shot'?'shotgun':curWeapon==='tac'?'spas':'shot');shout();
 cross.classList.add('fire');setTimeout(()=>cross.classList.remove('fire'),70);
@@ -2443,7 +2506,12 @@ if(tt>=0&&(bestT<0||tt<bestT)){bestT=tt;bestZ=z;}}
 if(bestZ){const hx=ox+dx*bestT, hy=oy+dy*bestT;
 const headY=!bestZ.isBoss?1.45:(bestZ.bossType==='demon'?DEMON_HEAD_F*bestZ.sy:(bestZ.bossType==='dragon'?DRAGON_HEAD_F*bestZ.sy:1.45*bestZ.sy));
 const head=hy>headY;
-const dmg=(head?w.head:w.body)*dmgMul;bestZ.hp-=dmg;if(!bestZ.isBoss)bestZ.stagger=.18;
+const dmg=(head?w.head:w.body)*dmgMul;
+
+if(cheatOneShot) bestZ.hp=0;
+else bestZ.hp-=dmg;
+
+if(!bestZ.isBoss) bestZ.stagger=.18;
 blood(_v1.set(hx,hy,.2),5);spawnImpact(hx,hy);sfx('hit');
 if(bestZ.hp<=0)killZombie(bestZ);
 spawnZap(_v3.set(ox,oy,.45),_dir.set(dx,dy,0),bestT,'body',hx,hy);
@@ -2460,12 +2528,53 @@ flashT=.08;muzzleLight.position.copy(P.mouthWorld);muzzleLight.intensity=7;
 function startReload(){const w=weapons[curWeapon];
 if(P.reloadKey!==null||w.ammo===w.mag)return;
 P.reloadKey=curWeapon;P.reloadT=w.reload;sfx('reload');setAmmo();}
-function hurtPlayer(dmg){if(P.invuln>0||P.dead)return;
-P.hp-=dmg;P.invuln=.7;shake=Math.min(shake+.5,1);hurtFlash();sfx('hurt');setHP();
-if(P.hp<=0){P.dead=true;P.deadT=0;mouse.down=false;bossMusicStop();}}
-function hurtPlayerRaw(dmg){if(P.dead)return;
-P.hp-=dmg;shake=Math.min(shake+.3,1);hurtFlash();sfx('hurt');setHP();
-if(P.hp<=0){P.dead=true;P.deadT=0;mouse.down=false;bossMusicStop();}}
+function hurtPlayer(dmg){
+  if(P.dead) return;
+
+  if(cheatGodLife){
+    P.hp=maxHp;
+    setHP();
+    return;
+  }
+
+  if(P.invuln>0) return;
+
+  P.hp-=dmg;
+  P.invuln=.7;
+  shake=Math.min(shake+.5,1);
+  hurtFlash();
+  sfx('hurt');
+  setHP();
+
+  if(P.hp<=0){
+    P.dead=true;
+    P.deadT=0;
+    mouse.down=false;
+    bossMusicStop();
+  }
+}
+function hurtPlayerRaw(dmg){
+  if(P.dead) return;
+
+  if(cheatGodLife){
+    P.hp=maxHp;
+    setHP();
+    return;
+  }
+
+  P.hp-=dmg;
+  shake=Math.min(shake+.3,1);
+  hurtFlash();
+  sfx('hurt');
+  setHP();
+
+  if(P.hp<=0){
+    P.dead=true;
+    P.deadT=0;
+    mouse.down=false;
+    bossMusicStop();
+  }
+}
 function update(dt,t){
 const playing=(state==='combat'||state==='intermission');
 const showSoldier=(state!=='title');

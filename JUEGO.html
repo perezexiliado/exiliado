@@ -1681,7 +1681,7 @@ if(x<f0)f0=x;if(x>f2)f2=x;if(y<f1)f1=y;if(y>f3)f3=y;}}
 if(f2<0)continue;
 if(f0<minX)minX=f0;if(f2>maxX)maxX=f2;
 if(f1<minY)minY=f1;if(f3>maxY)maxY=f3;
-if(k==='idle'||k==='walk'||k==='take_hit'){
+if(k==='idle'){
 if(f0<bMinX)bMinX=f0;if(f2>bMaxX)bMaxX=f2;
 if(f1<bMinY)bMinY=f1;if(f3>bMaxY)bMaxY=f3;}}
 if(maxX>=0)DEMON_CROP={x:minX,y:minY,w:maxX-minX+1,h:maxY-minY+1};
@@ -1691,8 +1691,8 @@ let dh=240,dw=dh*aspect;
 if(dw>284){dw=284;dh=dw/aspect;}
 DEMON_DRAW_H=dh;DEMON_DRAW_W=dw;
 const k3=dh/DEMON_CROP.h;
-DEMON_HITTOP_F=Math.max(1.0,(dh-(bMinY-DEMON_CROP.y)*k3)/120);
-DEMON_HITHALF_F=Math.max(0.3,((bMaxX-bMinX)*k3*0.5)/120);
+DEMON_HITTOP_F=(dh-(bMinY-DEMON_CROP.y)*k3)/120*0.92;
+DEMON_HITHALF_F=((bMaxX-bMinX)*k3*0.5)/120*0.5;
 DEMON_HEAD_F=DEMON_HITTOP_F*0.80;}
 }catch(e){DEMON_CROP=null;}
 demonReady=!!DEMON_CROP&&DEMON_ANIMS.idle.frames.length>0&&DEMON_ANIMS.walk.frames.length>0;}
@@ -1819,6 +1819,209 @@ g.imageSmoothingEnabled=false;
 g.drawImage(fr.cv,0,0,fr.fw,fr.fh,(fr.dx-C.x)*k3-w/2,(fr.dy-C.y)*k3-h,fr.fw*k3,fr.fh*k3);
 g.restore();}
 z.tex.needsUpdate=true;}
+/* ============ JEFE PSICÓPATA v3 (assets/psychoboss) ============ */
+const PSYCHO_BASE='assets/psychoboss/';
+const PSYCHO_FACE=-1; // si avanza de espaldas, cámbialo a 1
+const PSYCHO_ANIMS={
+idle:{fps:6,frames:[]},
+walk:{fps:11,frames:[]},
+dash:{fps:14,frames:[]},
+barrelroll:{fps:10,frames:[]},
+charged:{fps:12,frames:[]}
+};
+let psychoReady=false,psychoPend=5;
+let PSYCHO_CROP=null;
+let PSYCHO_DRAW_H=240,PSYCHO_DRAW_W=240;
+let PSYCHO_HITTOP_F=2.0,PSYCHO_HITHALF_F=0.5,PSYCHO_HEAD_F=1.3;
+let psychoHeadH=0,psychoBodyH=0;
+const PSYCHO_UNIW=260,PSYCHO_UNIH=240,PSYCHO_AX=130,PSYCHO_AY=230;
+function loadPsychoSheet(file,count,arr){
+const im=new Image();
+im.onload=()=>{
+const W=im.naturalWidth,H=im.naturalHeight;
+const tmp=document.createElement('canvas');tmp.width=W;tmp.height=H;
+const tg=tmp.getContext('2d',{willReadFrequently:true});
+tg.drawImage(im,0,0);
+const d=tg.getImageData(0,0,W,H).data;
+const rowHas=(y)=>{for(let x=0;x<W;x++){if(d[(y*W+x)*4+3]>8)return true;}return false;};
+const bands=[];let s=-1;
+for(let y=0;y<=H;y++){
+const any=(y<H)&&rowHas(y);
+if(any&&s<0)s=y;
+if(!any&&s>=0){bands.push([s,y]);s=-1;}
+}
+let cuts=(bands.length===count)?bands:null;
+if(!cuts){cuts=[];const fh=Math.floor(H/count);for(let i=0;i<count;i++)cuts.push([i*fh,(i+1)*fh]);}
+for(const cut of cuts){
+const y0=cut[0],y1=cut[1];
+let minX=W,maxX=-1,top=y1,bot=y0-1;
+for(let y=y0;y<y1;y++)for(let x=0;x<W;x++){if(d[(y*W+x)*4+3]>8){
+if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<top)top=y;if(y>bot)bot=y;}}
+if(maxX<0)continue;
+const fw=maxX-minX+1,fh=bot-top+1;
+const cv=document.createElement('canvas');cv.width=fw;cv.height=fh;
+cv.getContext('2d').drawImage(im,minX,top,fw,fh,0,0,fw,fh);
+arr.push({cv:cv,fw:fw,fh:fh,dx:PSYCHO_AX-fw/2,dy:PSYCHO_AY-fh});
+}
+psychoSeqDone();
+};
+im.onerror=()=>{psychoSeqDone();};
+im.src=PSYCHO_BASE+file;
+}
+const psychoHeadIm=new Image();
+psychoHeadIm.onload=()=>{try{
+const cv=document.createElement('canvas');cv.width=psychoHeadIm.naturalWidth;cv.height=psychoHeadIm.naturalHeight;
+const g=cv.getContext('2d');g.drawImage(psychoHeadIm,0,0);
+const d=g.getImageData(0,0,cv.width,cv.height).data;let y0=1e9,y1=-1;
+for(let y=0;y<cv.height;y++)for(let x=0;x<cv.width;x++){if(d[(y*cv.width+x)*4+3]>8){if(y<y0)y0=y;if(y>y1)y1=y;}}
+if(y1>=0)psychoHeadH=y1-y0+1;
+}catch(e){}};
+psychoHeadIm.src=PSYCHO_BASE+'PsychoBoss_Head_Boss.png';
+function psychoSeqDone(){if(--psychoPend>0)return;
+try{
+let minX=1e9,minY=1e9,maxX=-1,maxY=-1;
+let bMinX=1e9,bMinY=1e9,bMaxX=-1,bMaxY=-1;
+const cv=document.createElement('canvas');cv.width=PSYCHO_UNIW;cv.height=PSYCHO_UNIH;
+const g=cv.getContext('2d',{willReadFrequently:true});
+for(const k in PSYCHO_ANIMS)for(const fr of PSYCHO_ANIMS[k].frames){
+g.clearRect(0,0,cv.width,cv.height);
+g.drawImage(fr.cv,0,0,fr.fw,fr.fh,fr.dx,fr.dy,fr.fw,fr.fh);
+const d=g.getImageData(0,0,cv.width,cv.height).data;
+let f0=1e9,f1=1e9,f2=-1,f3=-1;
+for(let y=0;y<cv.height;y++)for(let x=0;x<cv.width;x++){if(d[(y*cv.width+x)*4+3]>8){
+if(x<f0)f0=x;if(x>f2)f2=x;if(y<f1)f1=y;if(y>f3)f3=y;}}
+if(f2<0)continue;
+if(f0<minX)minX=f0;if(f2>maxX)maxX=f2;
+if(f1<minY)minY=f1;if(f3>maxY)maxY=f3;
+if(k==='idle'||k==='walk'){
+if(f0<bMinX)bMinX=f0;if(f2>bMaxX)bMaxX=f2;
+if(f1<bMinY)bMinY=f1;if(f3>bMaxY)bMaxY=f3;}}
+if(maxX>=0)PSYCHO_CROP={x:minX,y:minY,w:maxX-minX+1,h:maxY-minY+1};
+if(PSYCHO_CROP&&bMaxX>=0){
+psychoBodyH=Math.max(8,bMaxY-bMinY);
+const aspect=PSYCHO_CROP.w/PSYCHO_CROP.h;
+let dh=240,dw=dh*aspect;
+if(dw>284){dw=284;dh=dw/aspect;}
+PSYCHO_DRAW_H=dh;PSYCHO_DRAW_W=dw;
+const k3=dh/PSYCHO_CROP.h;
+PSYCHO_HITTOP_F=Math.max(0.6,(dh-(bMinY-PSYCHO_CROP.y)*k3)/120);
+PSYCHO_HITHALF_F=Math.max(0.22,((bMaxX-bMinX)*k3*0.5)/120*0.72);
+PSYCHO_HEAD_F=(psychoHeadH>0)?PSYCHO_HITTOP_F*(1-clamp(psychoHeadH/psychoBodyH,.15,.5)):PSYCHO_HITTOP_F*0.80;}
+}catch(e){PSYCHO_CROP=null;}
+psychoReady=!!PSYCHO_CROP&&PSYCHO_ANIMS.idle.frames.length>0&&PSYCHO_ANIMS.walk.frames.length>0;}
+loadPsychoSheet('idle.png',6,PSYCHO_ANIMS.idle.frames);
+loadPsychoSheet('walk.png',13,PSYCHO_ANIMS.walk.frames);
+loadPsychoSheet('dash.png',8,PSYCHO_ANIMS.dash.frames);
+loadPsychoSheet('barrelroll.png',7,PSYCHO_ANIMS.barrelroll.frames);
+loadPsychoSheet('charged.png',10,PSYCHO_ANIMS.charged.frames);
+function psychoSetAnim(z,name){if(!z.anim)z.anim={name:name,frame:0,t:0};
+if(z.anim.name!==name){z.anim.name=name;z.anim.frame=0;z.anim.t=0;}}
+function psychoTick(z,dt){const seq=PSYCHO_ANIMS[z.anim.name];if(!seq||!seq.frames.length)return;
+z.anim.t+=dt;const fd=1/seq.fps;
+while(z.anim.t>=fd){z.anim.t-=fd;z.anim.frame=(z.anim.frame+1)%seq.frames.length;}}
+function drawPsycho(z){const g=z.ctx;
+g.setTransform(1,0,0,1,0,0);
+g.clearRect(0,0,g.canvas.width,g.canvas.height);
+const seq=PSYCHO_ANIMS[z.anim?z.anim.name:'idle'];
+const fr=seq&&seq.frames.length?seq.frames[Math.min(z.anim.frame,seq.frames.length-1)]:null;
+if(fr&&PSYCHO_CROP){const C=PSYCHO_CROP,dir=z.pose.dir||1;
+const h=PSYCHO_DRAW_H,w=PSYCHO_DRAW_W,k3=h/C.h;
+g.save();g.translate(CX*BOSS_RES,FEET*BOSS_RES);g.scale(PSYCHO_FACE*dir,1);
+g.imageSmoothingEnabled=false;
+g.drawImage(fr.cv,0,0,fr.fw,fr.fh,(fr.dx-C.x)*k3-w/2,(fr.dy-C.y)*k3-h,fr.fw*k3,fr.fh*k3);
+g.restore();}
+z.tex.needsUpdate=true;}
+/* ---- BARRIL (BrutHide.png) ---- */
+let psychoProjTex=null;
+const psychoProjIm=new Image();
+psychoProjIm.onload=()=>{
+psychoProjTex=new THREE.Texture(psychoProjIm);
+psychoProjTex.encoding=THREE.sRGBEncoding;
+psychoProjTex.magFilter=THREE.NearestFilter;psychoProjTex.minFilter=THREE.NearestFilter;
+psychoProjTex.generateMipmaps=false;psychoProjTex.needsUpdate=true;
+};
+psychoProjIm.src=PSYCHO_BASE+'Projectile/BrutHide.png';
+const PSYCHO_PROJ_DMG=18;
+const psychoProjs=[];
+for(let i=0;i<6;i++){
+const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1),
+new THREE.MeshBasicMaterial({transparent:true,alphaTest:.4,side:THREE.DoubleSide,fog:false,toneMapped:false}));
+m.visible=false;m.renderOrder=6;scene.add(m);
+psychoProjs.push({m:m,x:0,vx:0,life:0,active:false});
+}
+function throwPsychoProj(z){
+if(!psychoProjTex)return;
+for(const p of psychoProjs){if(!p.active){
+p.active=true;p.m.visible=true;
+p.m.material.map=psychoProjTex;p.m.material.needsUpdate=true;
+const ar=(psychoProjIm.naturalHeight||1)/(psychoProjIm.naturalWidth||1);
+p.m.scale.set(1.1,1.1*ar,1);
+p.x=z.x;p.vx=(P.x>z.x?1:-1)*13;p.life=6;
+p.m.position.set(p.x,1.05,0.35);p.m.rotation.z=0;
+sfx('gthrow');
+return;}}
+}
+function updatePsychoProjs(dt){
+for(const p of psychoProjs){if(!p.active)continue;
+p.life-=dt;p.x+=p.vx*dt;
+p.m.position.x=p.x;p.m.rotation.z+=dt*12;
+if(!P.dead&&Math.abs(p.x-P.x)<.55&&P.y<1.0){
+hurtPlayer(PSYCHO_PROJ_DMG);blood(_v1.set(P.x,P.y+1.1,.3),5);
+p.active=false;p.m.visible=false;continue;}
+if(p.life<=0||p.x>WORLD_LIMIT+1||p.x<-WORLD_LIMIT-1){
+dust(p.x,1,4);p.active=false;p.m.visible=false;}
+}
+}
+/* ---- RAYO DESDE EL CIELO (charged) ---- */
+const psychoBolts=[];
+for(let i=0;i<4;i++){
+const mark=new THREE.Mesh(new THREE.RingGeometry(.55,.85,24),
+new THREE.MeshBasicMaterial({color:0xff3b30,transparent:true,opacity:.9,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false,fog:false,toneMapped:false}));
+mark.rotation.x=-Math.PI/2;mark.visible=false;mark.renderOrder=8;scene.add(mark);
+const glow=new THREE.Sprite(new THREE.SpriteMaterial({map:texGlow,color:0xff5a3a,transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false,fog:false}));
+glow.scale.set(2.2,1.1,1);glow.visible=false;glow.renderOrder=7;scene.add(glow);
+const bolt=new THREE.Mesh(new THREE.PlaneGeometry(1.1,26),
+new THREE.MeshBasicMaterial({color:0xfff6d8,transparent:true,opacity:0,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false,fog:false,toneMapped:false}));
+bolt.position.y=13;bolt.visible=false;bolt.renderOrder=9;scene.add(bolt);
+const core=new THREE.Mesh(new THREE.PlaneGeometry(.35,26),
+new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false,fog:false,toneMapped:false}));
+core.position.y=13;core.visible=false;core.renderOrder=10;scene.add(core);
+psychoBolts.push({mark:mark,glow:glow,bolt:bolt,core:core,x:0,t:0,state:'idle'});
+}
+function psychoCastBolt(){
+for(const b of psychoBolts){if(b.state==='idle'){
+b.state='mark';b.t=1.0;
+b.x=clamp(P.x,-PLAYER_LIMIT,PLAYER_LIMIT);
+b.mark.visible=true;b.mark.position.set(b.x,.06,.3);
+b.glow.visible=true;b.glow.position.set(b.x,.3,.3);
+b.bolt.visible=false;b.core.visible=false;
+sfx('laser');
+return;}}
+}
+function updatePsychoBolts(dt){
+for(const b of psychoBolts){
+if(b.state==='idle')continue;
+b.t-=dt;
+if(b.state==='mark'){
+b.mark.material.opacity=.45+.45*Math.abs(Math.sin(performance.now()*.02));
+const s=1+(1-clamp(b.t,0,1))*.6;b.mark.scale.set(s,s,s);
+if(b.t<=0){
+b.state='strike';b.t=.22;
+b.bolt.visible=true;b.core.visible=true;
+b.bolt.position.set(b.x,13,.35);b.core.position.set(b.x,13,.36);
+b.mark.visible=false;b.glow.visible=false;
+if(!P.dead&&Math.abs(P.x-b.x)<1.25)hurtPlayer(25);
+shake=Math.min(shake+.5,1);sfx('gboom');
+spark(b.x,R(1,3),8);dust(b.x,0,6);
+}
+}else if(b.state==='strike'){
+const k=Math.max(0,b.t/.22);
+b.bolt.material.opacity=k*.95;b.core.material.opacity=k;
+if(b.t<=0){b.state='idle';b.bolt.visible=false;b.core.visible=false;}
+}
+}
+}
+/* ---- FIN PSICÓPATA v3 ---- */
 function buildZombie(res){
 res=res||SC;
 const cv=document.createElement('canvas');cv.width=res;cv.height=res;
@@ -1874,12 +2077,12 @@ if(Math.abs(x-P.x)<40)sfx('moan');
 }
 /* ---- SPAWN DE JEFE: cada 2 oleadas, mucha vida, arma aleatoria ---- */
 let bossSpawnedThisWave=false;
-let bossAlt=false;
+let bossIdx=-1;
 function spawnBoss(){
-if(!demonReady&&!dragonReady)return false;
-let type;
-if(demonReady&&dragonReady){bossAlt=!bossAlt;type=bossAlt?'dragon':'demon';}
-else type=demonReady?'demon':'dragon';
+if(!demonReady&&!dragonReady&&!psychoReady)return false;
+const avail=[];if(demonReady)avail.push('demon');if(dragonReady)avail.push('dragon');if(psychoReady)avail.push('psycho');
+bossIdx=(bossIdx+1)%avail.length;
+const type=avail[bossIdx];
 const side=Math.random()<.5?-1:1;
 const x=side*(WORLD_LIMIT-1.5);
 const z=buildZombie(SC*BOSS_RES);
@@ -1898,16 +2101,26 @@ z.dmg=30;
 z.hp=(140+wave*20)*80;z.maxhp=z.hp;
 z.speed=1.1;
 z.reach=1.5*scale;
-}else{
+}else if(type==='dragon'){
 z.name=pick(['VHRAKOTH, SEÑOR DRAGÓN','KARZAG, FUEGO ANTIGUO','EL DRAGON LORD']);
 const scale=R(5.6,6.4);
 z.sx=scale;z.sy=scale;
 z.hitTop=DRAGON_HITTOP_F*scale;
 z.hitHalf=DRAGON_HITHALF_F*scale;
-z.dmg=12; // daño POR CADA FRAME de golpe
+z.dmg=2; // daño POR CADA FRAME de golpe
 z.hp=(140+wave*20)*55;z.maxhp=z.hp;
 z.speed=3.4;
 z.reach=0.7*scale+0.8;
+}else if(type==='psycho'){
+z.name=pick(['EL PSICÓPATA','MARCUS "CARNICERO"','EL REO SIN NOMBRE']);
+const scale=R(2.2,2.6);
+z.sx=scale;z.sy=scale;
+z.hitTop=PSYCHO_HITTOP_F*scale;
+z.hitHalf=PSYCHO_HITHALF_F*scale;
+z.dmg=20;
+z.hp=(140+wave*20)*50;z.maxhp=z.hp;
+z.speed=2.6;
+z.reach=1.2*scale;
 }
 z.meshBaseY=MESH_CENTER_Y*z.sy;
 z.hpbarBaseY=2.15*z.sy;
@@ -1923,7 +2136,7 @@ spawnFlash(x);sfx('bossroar');bossMusicStart();
 showBanner('JEFE · '+z.name,'¡PREPÁRATE PARA EL COMBATE!');
 bossHud.classList.add('show');
 bossName.textContent=z.name;
-bossAb.textContent=type==='demon'?'JEFE · DEMONIO DEL ABISMO':'JEFE · SEÑOR DRAGÓN';
+bossAb.textContent=type==='demon'?'JEFE · DEMONIO DEL ABISMO':type==='dragon'?'JEFE · SEÑOR DRAGÓN':'JEFE · EL PSICÓPATA';
 return true;
 }
 function killZombie(z){
@@ -2237,8 +2450,49 @@ o.connect(g);g.connect(master);o.start(t);o.stop(t+dc+.1);}}}
 /* ---- CHAT DE TRUCOS (T) ---- */
 const chatEl=document.getElementById('chat'),chatInput=document.getElementById('chat-input');
 let chatOpen=false;
+
+let cheatOneShot=false;
+let cheatGodLife=false;
+let cheatInfAmmo=false;
+
 const CHEATS={
-HESOYAM:()=>{money+=10000;setMoney();sfx('buy');floatNum(P.x,2.2,'+10000','#f0d089');showBanner('TRUCO · HESOYAM','+10000 BOTÍN');}
+  HESOYAM:()=>{
+    money+=10000;
+    setMoney();
+    sfx('buy');
+    floatNum(P.x,2.2,'+10000','#f0d089');
+    showBanner('TRUCO · HESOYAM','+10000 BOTÍN');
+  },
+
+  AEZAKMI:()=>{
+    cheatOneShot=!cheatOneShot;
+    sfx('buy');
+    const msg=cheatOneShot?'UN DISPARO: ACTIVADO':'UN DISPARO: DESACTIVADO';
+    floatNum(P.x,2.2,msg,cheatOneShot?'#c9272f':'#9a8f7c');
+    showBanner('TRUCO · AEZAKMI',msg);
+  },
+
+  FULLME:()=>{
+    cheatGodLife=!cheatGodLife;
+
+    if(cheatGodLife){
+      P.hp=maxHp;
+      setHP();
+    }
+
+    sfx('buy');
+    const msg=cheatGodLife?'VIDA INFINITA: ACTIVADA':'VIDA INFINITA: DESACTIVADA';
+    floatNum(P.x,2.2,msg,cheatGodLife?'#7ff5ea':'#9a8f7c');
+    showBanner('TRUCO · FULLME',msg);
+},
+NORECHARGE:()=>{
+cheatInfAmmo=!cheatInfAmmo;
+sfx('buy');
+const msg=cheatInfAmmo?'MUNICIÓN INFINITA: ACTIVADA':'MUNICIÓN INFINITA: DESACTIVADA';
+floatNum(P.x,2.2,msg,cheatInfAmmo?'#7ff5ea':'#9a8f7c');
+showBanner('TRUCO · NORECHARGE',msg);
+setAmmo();
+}
 };
 function applyCheat(code){const f=CHEATS[code];if(!f)return false;f();return true;}
 function openChat(){chatOpen=true;chatEl.classList.add('show');chatInput.value='';
@@ -2307,8 +2561,8 @@ document.body.classList.toggle('lowhp',P.hp<=maxHp*0.3&&state!=='title');
 }
 function setAmmo(){const w=weapons[curWeapon];
 const lblEl=document.querySelector('#ammo-panel .hlabel');if(lblEl)lblEl.textContent=w.label;
-ammoEl.innerHTML=w.ammo+' <span class="res">/ ∞</span>';
-ammoEl.classList.toggle('low', w.ammo<=Math.max(1,Math.round(w.mag*0.3)));
+ammoEl.innerHTML=(cheatInfAmmo?'∞':w.ammo)+' <span class="res">/ ∞</span>';
+ammoEl.classList.toggle('low', !cheatInfAmmo&&w.ammo<=Math.max(1,Math.round(w.mag*0.3)));
 const r=(P.reloadKey===curWeapon);
 reloadMsg.textContent=r?'RECARGANDO…':'';reloadMsg.classList.toggle('on',r);}
 function showBanner(t,s){bannerT.textContent=t;bannerS.textContent=s;
@@ -2379,9 +2633,28 @@ let state='title',wave=0,kills=0,toSpawn=0,spawnT=0,spawnGap=1.2,interT=0,shake=
 camX=0,camOff=0,camLY=1.3,pausedFrom='',flashT=0,thudCd=0;
 const SHOULDER_WORLD_Y=SHOULDER[1]*PX2;
 const MESH_CENTER_Y=(FEET-SC/2)*PX2;
-function resetProgress(){money=0;maxHp=100;dmgMul=1;speedMul=1;levels.hp=0;levels.dmg=0;levels.spd=0;
-ownedW.shot=false;ownedW.snip=false;ownedW.tac=false;curWeapon='m4';
-weapons.m4.ammo=weapons.m4.mag;weapons.shot.ammo=weapons.shot.mag;weapons.snip.ammo=weapons.snip.mag;weapons.tac.ammo=weapons.tac.mag;}
+function resetProgress(){
+  money=0;
+  maxHp=100;
+  dmgMul=1;
+  speedMul=1;
+  levels.hp=0;
+  levels.dmg=0;
+  levels.spd=0;
+  ownedW.shot=false;
+  ownedW.snip=false;
+  ownedW.tac=false;
+  curWeapon='m4';
+
+  cheatOneShot=false;
+  cheatGodLife=false;
+  cheatInfAmmo=false;
+
+  weapons.m4.ammo=weapons.m4.mag;
+  weapons.shot.ammo=weapons.shot.mag;
+  weapons.snip.ammo=weapons.snip.mag;
+  weapons.tac.ammo=weapons.tac.mag;
+}
 function startGame(){resetProgress();state='intermission';wave=1;interT=2.4;bossSpawnedThisWave=false;
 titleEl.classList.add('hidden');document.body.classList.remove('intitle');document.body.classList.add('playing');
 bgmStart();
@@ -2396,7 +2669,8 @@ for(const im of impacts){im.g.visible=false;im.life=0;}
 for(const f of spawnFlashes){scene.remove(f.L);scene.remove(f.sp);scene.remove(f.ring);
 f.sp.material.dispose();f.ring.material.dispose();f.ring.geometry.dispose();}
 spawnFlashes.length=0;
-for(const w of boomWaves){w.m.visible=false;w.life=0;}
+for(const p of psychoProjs){p.active=false;p.m.visible=false;}
+for(const b of psychoBolts){b.state='idle';b.mark.visible=false;b.glow.visible=false;b.bolt.visible=false;b.core.visible=false;}
 grenadeState.cd=0;grenadeState.holding=false;grenadeState.thrown=false;
 grenadeMesh.visible=false;grenadeGlow.intensity=0;hideTrajectory();
 Object.assign(P,{x:0,y:0,vy:0,facing:1,hp:100,ammo:30,reloadKey:null,reloadT:0,fireCd:0,recoil:0,invuln:0,
@@ -2420,7 +2694,8 @@ return tmin;
 }
 function shoot(){
 const w=weapons[curWeapon];
-w.ammo--;setAmmo();P.recoil=1;P.fireCd=w.fireCd;
+if(!cheatInfAmmo){w.ammo--;setAmmo();}
+P.recoil=1;P.fireCd=w.fireCd;
 shake=Math.min(shake+(curWeapon==='snip'?.3:(curWeapon==='shot'||curWeapon==='tac')?.22:.12),1);
 sfx(curWeapon==='snip'?'snip':curWeapon==='shot'?'shotgun':curWeapon==='tac'?'spas':'shot');shout();
 cross.classList.add('fire');setTimeout(()=>cross.classList.remove('fire'),70);
@@ -2443,9 +2718,14 @@ let bestT=-1,bestZ=null;
 for(const z of zombies){if(z.dead)continue;const tt=segHit2D(ox,oy,dx,dy,tExit,z);
 if(tt>=0&&(bestT<0||tt<bestT)){bestT=tt;bestZ=z;}}
 if(bestZ){const hx=ox+dx*bestT, hy=oy+dy*bestT;
-const headY=!bestZ.isBoss?1.45:(bestZ.bossType==='demon'?DEMON_HEAD_F*bestZ.sy:(bestZ.bossType==='dragon'?DRAGON_HEAD_F*bestZ.sy:1.45*bestZ.sy));
+const headY=!bestZ.isBoss?1.45:(bestZ.bossType==='demon'?DEMON_HEAD_F*bestZ.sy:(bestZ.bossType==='dragon'?DRAGON_HEAD_F*bestZ.sy:(bestZ.bossType==='psycho'?PSYCHO_HEAD_F*bestZ.sy:1.45*bestZ.sy)));
 const head=hy>headY;
-const dmg=(head?w.head:w.body)*dmgMul;bestZ.hp-=dmg;if(!bestZ.isBoss)bestZ.stagger=.18;
+const dmg=(head?w.head:w.body)*dmgMul;
+
+if(cheatOneShot) bestZ.hp=0;
+else bestZ.hp-=dmg;
+
+if(!bestZ.isBoss) bestZ.stagger=.18;
 blood(_v1.set(hx,hy,.2),5);spawnImpact(hx,hy);sfx('hit');
 if(bestZ.hp<=0)killZombie(bestZ);
 spawnZap(_v3.set(ox,oy,.45),_dir.set(dx,dy,0),bestT,'body',hx,hy);
@@ -2462,12 +2742,53 @@ flashT=.08;muzzleLight.position.copy(P.mouthWorld);muzzleLight.intensity=7;
 function startReload(){const w=weapons[curWeapon];
 if(P.reloadKey!==null||w.ammo===w.mag)return;
 P.reloadKey=curWeapon;P.reloadT=w.reload;sfx('reload');setAmmo();}
-function hurtPlayer(dmg){if(P.invuln>0||P.dead)return;
-P.hp-=dmg;P.invuln=.7;shake=Math.min(shake+.5,1);hurtFlash();sfx('hurt');setHP();
-if(P.hp<=0){P.dead=true;P.deadT=0;mouse.down=false;bossMusicStop();}}
-function hurtPlayerRaw(dmg){if(P.dead)return;
-P.hp-=dmg;shake=Math.min(shake+.3,1);hurtFlash();sfx('hurt');setHP();
-if(P.hp<=0){P.dead=true;P.deadT=0;mouse.down=false;bossMusicStop();}}
+function hurtPlayer(dmg){
+  if(P.dead) return;
+
+  if(cheatGodLife){
+    P.hp=maxHp;
+    setHP();
+    return;
+  }
+
+  if(P.invuln>0) return;
+
+  P.hp-=dmg;
+  P.invuln=.7;
+  shake=Math.min(shake+.5,1);
+  hurtFlash();
+  sfx('hurt');
+  setHP();
+
+  if(P.hp<=0){
+    P.dead=true;
+    P.deadT=0;
+    mouse.down=false;
+    bossMusicStop();
+  }
+}
+function hurtPlayerRaw(dmg){
+  if(P.dead) return;
+
+  if(cheatGodLife){
+    P.hp=maxHp;
+    setHP();
+    return;
+  }
+
+  P.hp-=dmg;
+  shake=Math.min(shake+.3,1);
+  hurtFlash();
+  sfx('hurt');
+  setHP();
+
+  if(P.hp<=0){
+    P.dead=true;
+    P.deadT=0;
+    mouse.down=false;
+    bossMusicStop();
+  }
+}
 function update(dt,t){
 const playing=(state==='combat'||state==='intermission');
 const showSoldier=(state!=='title');
@@ -2548,6 +2869,8 @@ updateZaps(dt);
 updateImpacts(dt);
 updateSpawnFlashes(dt);
 updateGrenade(dt);
+updatePsychoProjs(dt);
+updatePsychoBolts(dt);
 updateBoomWaves(dt);
 updateSkyFx(dt,t);
 flashLightSpot.position.set(P.x+P.facing*.3,1.7,3.5);
@@ -2558,7 +2881,7 @@ if(state==='intermission'){interT-=dt;
 if(interT<=0){state='combat';toSpawn=3+wave*2;spawnGap=Math.max(.5,1.4-wave*.08);spawnT=.6;}}
 if(state==='combat'){
 if(toSpawn>0){spawnT-=dt;if(spawnT<=0){spawnZombie();toSpawn--;spawnT=spawnGap;}}
-else if(zombies.every(z=>z.dead)&&!zombies.some(z=>z.isBoss&&!z._deathDone&&((z.bossType==='demon'&&demonReady)||(z.bossType==='dragon'&&dragonReady)))){
+else if(zombies.every(z=>z.dead)&&!zombies.some(z=>z.isBoss&&!z._deathDone&&((z.bossType==='demon'&&demonReady)||(z.bossType==='dragon'&&dragonReady)||(z.bossType==='psycho'&&psychoReady)))){
 if(!bossSpawnedThisWave && (wave%2===0)){ bossSpawnedThisWave=true; spawnBoss(); }
 else { bossSpawnedThisWave=false; wave++;money+=15;setMoney();
 P.hp=Math.min(maxHp,P.hp+10);setHP();
@@ -2578,7 +2901,7 @@ let thighF,thighB,kneeF,kneeB,lean,armF,armB,bob;
 if(z.isBoss){
 /* ---- MARCHA SOLEMNE: torso erguido, brazos caídos, paso medido ---- */
 if(dist>1.05||z.atkCd>0){
-if(z.stagger<=0&&!(z.windup>0)) z.x=clamp(z.x+dir*z.speed*dt,-ZOMBIE_LIMIT,ZOMBIE_LIMIT); z.ph+=dt*z.speed*2.1;
+if(z.stagger<=0&&!(z.windup>0)&&z.bossType!=='psycho') z.x=clamp(z.x+dir*z.speed*dt,-ZOMBIE_LIMIT,ZOMBIE_LIMIT); z.ph+=dt*z.speed*2.1;
 const s=Math.sin(z.ph);
 thighF=s*.30; thighB=-s*.30;
 kneeF=Math.max(0,-s)*.45; kneeB=Math.max(0,s)*.45;
@@ -2591,7 +2914,7 @@ thighF=.05;thighB=-.05;kneeF=0;kneeB=0;lean=.03;
 armF=-.75;armB=-.85;bob=Math.sin(t*1.8)*.12;
 }
 const reachX=z.reach||1.05*z.sy;
-if(dist<=reachX && z.atkCd<=0 && z.windup<=0 && z.stagger<=0){ z.windup=(z.bossType==='demon')?0.75:(z.bossType==='dragon')?0.45:0.30; if(Math.random()<.6)sfx('zatk'); }
+if(dist<=reachX && z.atkCd<=0 && z.windup<=0 && z.stagger<=0 && z.bossType!=='psycho'){ z.windup=(z.bossType==='demon')?0.75:(z.bossType==='dragon')?0.45:0.30; if(Math.random()<.6)sfx('zatk'); }
 if(z.windup>0){ z.windup-=dt; armF=1.35; armB=-1.2; lean=.18;
 if(z.windup<=0){ z.atkCd=0.8;
 if(z.bossType!=='dragon'&&Math.abs(P.x-z.x)<(z.reach||1.5*z.sy) && P.y<BITE_REACH_Y*z.sy) hurtPlayer(z.dmg); } }
@@ -2678,6 +3001,47 @@ if((pf<half&&nf>=half)||nf<pf){dust(z.x-dir*.4,0,3);shake=Math.min(shake+.03,1);
 }
 }
 drawDragon(z);
+}else if(z.isBoss&&z.bossType==='psycho'&&psychoReady){
+if(z.psyState===undefined){z.psyState='walk';z.psyCd=2.5;z.psyT=0;z.psyRunT=0;z._thrown=false;}
+z.psyCd-=dt;
+const rage=z.hp<z.maxhp*.5;
+if(z.stagger>0){z.psyState='walk';psychoSetAnim(z,'walk');psychoTick(z,dt);}
+else if(z.psyState==='charge'){ /* visible con charged; al terminar, rayo */
+const pf=z.anim?z.anim.frame:0;
+psychoTick(z,dt);
+const nf=z.anim?z.anim.frame:0;
+if(nf<pf){psychoCastBolt();z.psyState='recover';z.psyT=.5;z.psyCd=rage?1.8:3.0;}
+}else if(z.psyState==='dash'){
+z.psyRunT+=dt;
+z.x=clamp(z.x+dir*(rage?16:12)*dt,-ZOMBIE_LIMIT,ZOMBIE_LIMIT);
+psychoTick(z,dt);
+if(Math.random()<dt*30)dust(z.x-dir*.5,0,1);
+if(dist<1.1){
+if(P.y<BITE_REACH_Y)hurtPlayer(z.dmg);
+z.psyState='recover';z.psyT=.6;z.psyCd=rage?1.6:2.6;
+}else if(z.psyRunT>1.2||z.x<=-ZOMBIE_LIMIT+.1||z.x>=ZOMBIE_LIMIT-.1){
+z.psyState='recover';z.psyT=.5;z.psyCd=rage?1.6:2.6;
+}
+}else if(z.psyState==='throw'){
+const pf=z.anim?z.anim.frame:0;
+psychoTick(z,dt);
+const nf=z.anim?z.anim.frame:0;
+if(!z._thrown&&nf>=3){z._thrown=true;throwPsychoProj(z);}
+if(nf<pf){z.psyState='recover';z.psyT=.5;z.psyCd=rage?1.8:3.0;}
+}else if(z.psyState==='recover'){
+z.psyT-=dt;psychoSetAnim(z,'walk');psychoTick(z,dt);
+if(z.psyT<=0)z.psyState='walk';
+}else{ /* walk */
+if(z.psyCd<=0){
+if(dist>6){z.psyState='charge';psychoSetAnim(z,'charged');z.anim.frame=0;z.anim.t=0;}
+else if(dist>3.5){z.psyState='throw';psychoSetAnim(z,'barrelroll');z.anim.frame=0;z.anim.t=0;z._thrown=false;}
+else{z.psyState='dash';z.psyRunT=0;psychoSetAnim(z,'dash');z.anim.frame=0;z.anim.t=0;}
+}else{
+z.x=clamp(z.x+dir*z.speed*dt,-ZOMBIE_LIMIT,ZOMBIE_LIMIT);
+psychoSetAnim(z,'walk');psychoTick(z,dt);
+}
+}
+drawPsycho(z);
 }else drawZombie(z);
 z.mesh.position.x=z.x;
 z.mesh.position.y=z.meshBaseY+(z.airY||0);
@@ -2702,6 +3066,11 @@ dragonSetAnim(z,'death');dragonTick(z,dt);drawDragon(z);
 z.blobMat.opacity=.3*fade;
 const dq=DRAGON_ANIMS.death;
 if(dq.frames.length&&z.anim.frame>=dq.frames.length-1)z._deathDone=true;
+}else if(z.isBoss&&z.bossType==='psycho'&&psychoReady){
+psychoSetAnim(z,'idle');psychoTick(z,dt);drawPsycho(z);
+z.blobMat.opacity=.3*fade;
+z.mat.opacity=fade;
+if(z.fallT>1.2)z._deathDone=true;
 }else{
 z.pose={dir:z.dir,thighF:0,thighB:0,kneeF:0,kneeB:0,lean:0,armF:0,armB:0,bob:0,
 dead:{rot:fall*1.3,sink:sinkPx,fade}};
