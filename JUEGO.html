@@ -2151,11 +2151,54 @@ bossName.textContent=z.name;
 bossAb.textContent=type==='demon'?'JEFE · DEMONIO DEL ABISMO':type==='dragon'?'JEFE · SEÑOR DRAGÓN':'JEFE · EL PSICÓPATA';
 return true;
 }
+const MEDKIT_CHANCE=0.5; 
+const MEDKIT_HEAL=0.30;  
+const MEDKIT_LIFE=12;  
+let medkitTex=null;
+const medkitIm=new Image();
+medkitIm.onload=()=>{
+medkitTex=new THREE.Texture(medkitIm);
+medkitTex.encoding=THREE.sRGBEncoding;
+medkitTex.magFilter=THREE.NearestFilter;medkitTex.minFilter=THREE.NearestFilter;
+medkitTex.generateMipmaps=false;medkitTex.needsUpdate=true;
+};
+medkitIm.src='assets/medkit.png';
+const medkits=[];
+for(let i=0;i<24;i++){
+const m=new THREE.Mesh(new THREE.PlaneGeometry(.55,.55),
+new THREE.MeshBasicMaterial({transparent:true,alphaTest:.4,side:THREE.DoubleSide,fog:false,toneMapped:false}));
+m.visible=false;m.renderOrder=6;scene.add(m);
+medkits.push({m:m,x:0,t:0,life:0,active:false,seed:R(0,10)});
+}
+function spawnMedkit(x){
+for(const k of medkits){if(!k.active){
+k.active=true;k.m.visible=true;k.x=x;k.t=0;k.life=MEDKIT_LIFE;
+k.m.position.set(x,.35,.35);
+return;}}
+}
+function updateMedkits(dt,t){
+for(const k of medkits){if(!k.active)continue;
+if(!k.m.material.map&&medkitTex){k.m.material.map=medkitTex;k.m.material.needsUpdate=true;}
+k.t+=dt;k.life-=dt;
+if(k.life<=0){k.active=false;k.m.visible=false;continue;}
+k.m.position.set(k.x,.32+Math.sin(t*3+k.seed)*.06,.35);
+k.m.material.opacity=(k.life<3)?(Math.sin(t*10)>0?1:.25):1;
+if(!P.dead&&P.hp<maxHp&&Math.abs(P.x-k.x)<.7&&P.y<1.0){
+const heal=Math.round(maxHp*MEDKIT_HEAL);
+P.hp=Math.min(maxHp,P.hp+heal);
+setHP();
+floatNum(P.x,2.0,'+'+heal+' PV','#7ff5ea');
+sfx('heal');
+k.active=false;k.m.visible=false;
+}
+}
+}
 function killZombie(z){
 z.dead=true;z.fallT=0;z.hpbar.visible=false;kills++;killNum.textContent=kills;
 if(z.isBoss){bossMusicStop();
 if(z.bossType==='demon')playDemonDeath();
 else if(z.bossType==='dragon')playDragonDeath();}
+if(Math.random()<MEDKIT_CHANCE)spawnMedkit(z.x);
 const reward=z.isBoss?200:z.cls.cash;
 money += reward; setMoney(); floatNum(z.x,1.7,'+'+reward,'#f0d089');
 const d=new THREE.Mesh(decalGeo,bas(0x240607,{transparent:true,opacity:.8}));
@@ -2425,6 +2468,7 @@ else if(n==='spas'){if(!playSpasSfx()){nz(t,.2,'lowpass',1500,110,1.0);tone(t,.1
 else if(n==='shotgun'){nz(t,.2,'lowpass',1500,110,1.0);tone(t,.1,'square',110,48,.34);tone(t,.07,'sawtooth',220,90,.2);}
 else if(n==='snip'){nz(t,.07,'highpass',3200,null,.42);tone(t,.2,'sawtooth',190,70,.3);tone(t,.32,'sine',60,30,.3);}
 else if(n==='buy'){tone(t,.06,'triangle',660,880,.18);tone(t+.07,.09,'triangle',990,1320,.14);}
+else if(n==='heal'){tone(t,.09,'sine',440,660,.22);tone(t+.1,.14,'sine',660,990,.18);}
 else if(n==='swap'){tone(t,.05,'square',420,620,.12);}
 else if(n==='empty')tone(t,.04,'square',900,700,.12);
 else if(n==='reload'){nz(t,.04,'highpass',1800,null,.25);tone(t+.4,.05,'square',520,400,.15);
@@ -2697,6 +2741,7 @@ f.sp.material.dispose();f.ring.material.dispose();f.ring.geometry.dispose();}
 spawnFlashes.length=0;
 for(const p of psychoProjs){p.active=false;p.m.visible=false;}
 for(const b of psychoBolts){b.state='idle';b.mark.visible=false;b.glow.visible=false;b.bolt.visible=false;b.core.visible=false;}
+for(const k of medkits){k.active=false;k.m.visible=false;}
 grenadeState.cd=0;grenadeState.holding=false;grenadeState.thrown=false;
 grenadeMesh.visible=false;grenadeGlow.intensity=0;hideTrajectory();
 Object.assign(P,{x:0,y:0,vy:0,facing:1,hp:100,ammo:30,reloadKey:null,reloadT:0,fireCd:0,recoil:0,invuln:0,
@@ -2897,6 +2942,7 @@ updateSpawnFlashes(dt);
 updateGrenade(dt);
 updatePsychoProjs(dt);
 updatePsychoBolts(dt);
+updateMedkits(dt,t);
 updateBoomWaves(dt);
 updateSkyFx(dt,t);
 flashLightSpot.position.set(P.x+P.facing*.3,1.7,3.5);
