@@ -2151,7 +2151,7 @@ bossName.textContent=z.name;
 bossAb.textContent=type==='demon'?'JEFE · DEMONIO DEL ABISMO':type==='dragon'?'JEFE · SEÑOR DRAGÓN':'JEFE · EL PSICÓPATA';
 return true;
 }
-const MEDKIT_CHANCE=0.5; 
+const MEDKIT_CHANCE=0.1; 
 const MEDKIT_HEAL=0.30;  
 const MEDKIT_LIFE=12;  
 let medkitTex=null;
@@ -2212,10 +2212,10 @@ const GRENADE_SPEED=11;
 const GRENADE_GRAV=20;
 const GRENADE_REST=0.42;
 const GRENADE_FRIC=0.6;
-const GRENADE_RADIUS=4.2;
-const GRENADE_DMG=150;
-const GRENADE_SELF=30;
-const GRENADE_SELF_R=3.0;
+const GRENADE_RADIUS=5.0;
+const GRENADE_DMG=400;
+const GRENADE_SELF=45;
+const GRENADE_SELF_R=4.0;
 const grenadeState={cd:0,holding:false,thrown:false,fuse:0,
 x:0,y:0,z:0.25,vx:0,vy:0,vz:0,rest:0};
 const GRENADE_ART=[
