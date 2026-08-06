@@ -2218,34 +2218,22 @@ const GRENADE_SELF=45;
 const GRENADE_SELF_R=4.0;
 const grenadeState={cd:0,holding:false,thrown:false,fuse:0,
 x:0,y:0,z:0.25,vx:0,vy:0,vz:0,rest:0};
-const GRENADE_ART=[
-".........KK.......",
-"........KLLK......",
-"..KK....KLLLK.....",
-".K..K...KLLLDK.KK.",
-".K..K..KKLLLDKKLLK",
-".K..K..KDDDDK.KLLK",
-"..KK...KSSSDK..KDK",
-".....KKKKKKKK..K..",
-"....KLLMMDLLK.....",
-"...KLLMDKKMDLLK...",
-"...KLMDK..KMDLK...",
-"...KMDKKKKKKMDK...",
-"...KLMDK..KMDLK...",
-"...KLLMDKKMDLLK...",
-"....KLLMDKMDLK....",
-"....KLMDKKMDLK....",
-".....KMDKKMDK.....",
-"......KKKKKK......"];
-const GPAL={K:'#05060a',L:'#b6c0a0',M:'#828e68',D:'#566046',S:'#3a4430'};
-const grenadeImg=pxCanvas(GRENADE_ART,GPAL);
-const grenadeTex=new THREE.CanvasTexture(grenadeImg);
-grenadeTex.magFilter=THREE.NearestFilter;grenadeTex.minFilter=THREE.NearestFilter;
-grenadeTex.generateMipmaps=false;grenadeTex.encoding=THREE.sRGBEncoding;
-const GPX=0.026;
+/* ---- GRANADA: textura principal assets/grenade.png; respaldo mínimo en canvas si falla ---- */
+function grenadeFallbackTex(){
+const c=document.createElement('canvas');c.width=16;c.height=18;
+const g=c.getContext('2d');
+g.fillStyle='#05060a';g.fillRect(6,1,4,5);g.fillRect(3,3,4,3);
+g.fillStyle='#566046';g.fillRect(4,6,8,11);
+g.fillStyle='#828e68';g.fillRect(4,6,8,3);
+g.fillStyle='#3a4430';g.fillRect(4,12,8,2);
+const t=new THREE.CanvasTexture(c);
+t.magFilter=THREE.NearestFilter;t.minFilter=THREE.NearestFilter;
+t.generateMipmaps=false;t.encoding=THREE.sRGBEncoding;
+return t;
+}
 const grenadeMesh=new THREE.Mesh(
-new THREE.PlaneGeometry(GRENADE_ART[0].length*GPX,GRENADE_ART.length*GPX),
-new THREE.MeshBasicMaterial({map:grenadeTex,transparent:true,alphaTest:.5,
+new THREE.PlaneGeometry(0.42,0.5),
+new THREE.MeshBasicMaterial({map:grenadeFallbackTex(),transparent:true,alphaTest:.5,
 side:THREE.DoubleSide,fog:false,toneMapped:false,depthWrite:true}));
 grenadeMesh.visible=false;grenadeMesh.renderOrder=5;scene.add(grenadeMesh);
 /* ---- GRANADA HD: sustituye el pixel art por assets/grenade.png ---- */
